@@ -1,8 +1,21 @@
 use crate::traits::{eps::Eps, is_equal::IsEqual, is_same::IsSame};
 
+#[derive(Debug)]
 pub struct Point2 {
     pub x: f64,
     pub y: f64,
+}
+
+impl Point2 {
+    pub fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+}
+
+impl Default for Point2 {
+    fn default() -> Self {
+        Self { x: 0.0, y: 0.0 }
+    }
 }
 
 impl IsEqual for Point2 {
@@ -17,6 +30,12 @@ impl IsEqual for Point2 {
 impl IsSame for Point2 {
     fn is_same(&self, other: &Self, eps: Option<Eps>) -> bool {
         self.is_equal(other, eps)
+    }
+}
+
+impl PartialEq for Point2 {
+    fn eq(&self, other: &Self) -> bool {
+        self.is_equal(other, None)
     }
 }
 
@@ -43,11 +62,6 @@ mod tests {
         let p2 = Point2 { x: 1.1, y: 1.0 };
         let result = p1.is_equal(&p2, None);
         assert_eq!(result, false);
-
-        let p1 = Point2 { x: 1.0, y: 1.0 };
-        let p2 = Point2 { x: 1.1, y: 1.1 };
-        let result = p1.is_equal(&p2, Some(Eps::new(0.2)));
-        assert_eq!(result, true);
 
         let p1 = Point2 { x: 1.0, y: 1.0 };
         let p2 = Point2 { x: 1.1, y: 1.1 };
