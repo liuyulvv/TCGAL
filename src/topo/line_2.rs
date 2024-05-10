@@ -15,6 +15,13 @@ impl Line2 {
         Self { a, b, c }
     }
 
+    pub fn from_points(start: Point2, end: Point2) -> Self {
+        let a = end.y - start.y;
+        let b = start.x - end.x;
+        let c = start.x * (start.y - end.y) + start.y * (end.x - start.x);
+        Self { a, b, c }
+    }
+
     pub fn is_intersect(&self, other: &Self, eps: Option<Eps>) -> bool {
         let eps = eps.unwrap_or(Eps::default()).value;
         let det = self.a * other.b - self.b * other.a;
