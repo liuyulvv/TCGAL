@@ -1,6 +1,11 @@
-use crate::traits::{eps::Eps, is_equal::IsEqual, is_same::IsSame};
+use std::ops::{Add, Div, Mul, Sub};
 
-#[derive(Debug)]
+use crate::{
+    math::vector_2::Vector2,
+    traits::{eps::Eps, is_equal::IsEqual, is_same::IsSame},
+};
+
+#[derive(Debug, Clone, Copy)]
 pub struct Point2 {
     pub x: f64,
     pub y: f64,
@@ -9,6 +14,20 @@ pub struct Point2 {
 impl Point2 {
     pub fn new(x: f64, y: f64) -> Self {
         Self { x, y }
+    }
+
+    pub fn from_vector(vector: &Vector2) -> Self {
+        Self::new(vector.x, vector.y)
+    }
+
+    pub fn distance_to(&self, other: &Self) -> f64 {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        (dx * dx + dy * dy).sqrt()
+    }
+
+    pub fn get_vector(&self) -> Vector2 {
+        Vector2::new(self.x, self.y)
     }
 }
 
@@ -39,12 +58,43 @@ impl PartialEq for Point2 {
     }
 }
 
+impl Add for Point2 {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self::Output {
+        Self::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+impl Sub for Point2 {
+    type Output = Vector2;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Vector2::new(self.x - other.x, self.y - other.y)
+    }
+}
+
+impl<T: Into<f64>> Mul<T> for Point2 {
+    type Output = Self;
+
+    fn mul(self, other: T) -> Self::Output {
+        let other = other.into();
+        Self::new(self.x * other, self.y * other)
+    }
+}
+
+impl<T: Into<f64>> Div<T> for Point2 {
+    type Output = Self;
+
+    fn div(self, other: T) -> Self::Output {
+        let other = other.into();
+        Self::new(self.x / other, self.y / other)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::{
-        topo::point_2::Point2,
-        traits::{eps::Eps, is_equal::IsEqual},
-    };
+    use super::*;
 
     #[test]
     fn is_equal() {
