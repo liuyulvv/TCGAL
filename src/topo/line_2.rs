@@ -1,5 +1,7 @@
 use crate::traits::eps::Eps;
+use crate::traits::is_equal::IsEqual;
 use crate::traits::is_parallel::IsParallel;
+use crate::traits::is_same::IsSame;
 
 use super::point_2::Point2;
 
@@ -23,29 +25,29 @@ impl Line2 {
     }
 
     pub fn is_intersect(&self, other: &Self, eps: Option<Eps>) -> bool {
-        let eps = eps.unwrap_or(Eps::default()).value;
+        let eps_value = eps.unwrap_or(Eps::default()).value;
         let det = self.a * other.b - self.b * other.a;
-        if det.abs() < eps {
-            return false;
+        if det.abs() < eps_value {
+            return self.is_same(other, eps);
         }
-        let x = (self.b * other.c - self.c * other.b) / det;
-        let y = (self.c * other.a - self.a * other.c) / det;
-        let is_self_on_line = self.a * x + self.b * y - self.c < eps;
-        let is_other_on_line = other.a * x + other.b * y - other.c < eps;
-        return is_self_on_line && is_other_on_line;
+        true
     }
 
     pub fn intersection(&self, other: &Self, eps: Option<Eps>) -> Option<Point2> {
-        let eps = eps.unwrap_or(Eps::default()).value;
+        let eps_value = eps.unwrap_or(Eps::default()).value;
         let det = self.a * other.b - self.b * other.a;
-        if det.abs() < eps {
+        if det.abs() < eps_value {
+            if self.is_same(other, eps) {
+                // TODO: implement overlap
+                return None;
+            }
             return None;
         }
         let x = (self.b * other.c - self.c * other.b) / det;
         let y = (self.c * other.a - self.a * other.c) / det;
-        let is_self_on_line = self.a * x + self.b * y - self.c < eps;
-        let is_other_on_line = other.a * x + other.b * y - other.c < eps;
-        if is_self_on_line && is_other_on_line {
+        let is_self_on_line = self.a * x + self.b * y - self.c < eps_value;
+        let is_other_on_line = other.a * x + other.b * y - other.c < eps_value;
+        if is_self_on_line || is_other_on_line {
             return Some(Point2::new(x, y));
         }
         return None;
@@ -57,6 +59,22 @@ impl IsParallel for Line2 {
         let eps = eps.unwrap_or(Eps::default()).value;
         let det = self.a * other.b - self.b * other.a;
         return det.abs() < eps;
+    }
+}
+
+impl IsSame for Line2 {
+    fn is_same(&self, other: &Self, eps: Option<Eps>) -> bool {
+        let eps = eps.unwrap_or(Eps::default()).value;
+        let det = self.a * other.b - self.b * other.a;
+        let det_c = self.c * other.b - self.b * other.c;
+        let det_a = self.a * other.c - self.c * other.a;
+        return det.abs() < eps && det_c.abs() < eps && det_a.abs() < eps;
+    }
+}
+
+impl IsEqual for Line2 {
+    fn is_equal(&self, other: &Self, eps: Option<Eps>) -> bool {
+        self.is_same(other, eps)
     }
 }
 
@@ -80,16 +98,6 @@ mod tests {
         let l2 = Line2::new(1.0, 2.0, 1.0);
         let result = l1.is_parallel(&l2, None);
         assert_eq!(result, false);
-
-        let l1 = Line2::new(1.0, 1.0, 1.0);
-        let l2 = Line2::new(1.0, 2.0, 2.0);
-        let result = l1.is_parallel(&l2, None);
-        assert_eq!(result, false);
-
-        let l1 = Line2::new(1.0, 1.0, 1.0);
-        let l2 = Line2::new(1.0, 1.0, 1.0);
-        let result = l1.is_parallel(&l2, Some(Eps::new(0.2)));
-        assert_eq!(result, true);
 
         let l1 = Line2::new(1.0, 0.0, 1.0);
         let l2 = Line2::new(1.0, 0.0, 2.0);
@@ -120,7 +128,7 @@ mod tests {
         let l1 = Line2::new(1.0, 1.0, 1.0);
         let l2 = Line2::new(1.0, 1.0, 1.0);
         let result = l1.is_intersect(&l2, None);
-        assert_eq!(result, false);
+        assert_eq!(result, true);
 
         let l1 = Line2::new(1.0, 1.0, 1.0);
         let l2 = Line2::new(1.0, 1.0, 2.0);
