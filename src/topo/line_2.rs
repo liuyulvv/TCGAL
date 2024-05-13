@@ -50,6 +50,12 @@ impl Line2 {
         let y = (self.c * other.a - self.a * other.c) / det;
         return Some(Point2::new(x, y));
     }
+
+    pub fn is_point_2_on(&self, point: &Point2, eps: Option<Eps>) -> bool {
+        let eps = eps.unwrap_or(Eps::default()).value;
+        let result = self.a * point.x + self.b * point.y + self.c;
+        return result.abs() < eps;
+    }
 }
 
 impl IsParallel for Line2 {
@@ -175,5 +181,24 @@ mod tests {
         let l2 = Line2::new(1.0, 0.0, 2.0);
         let result = l1.intersection(&l2, None);
         assert_eq!(result, None);
+    }
+
+    #[test]
+    fn is_point_2_on() {
+        let p1 = Point2::new(1.0, 1.0);
+        let p2 = Point2::new(1.0, 1.0);
+        let s = Line2::from_points(p1, p2);
+        let result = s.is_point_2_on(&Point2::new(1.0, 1.0), None);
+        assert_eq!(result, true);
+
+        let p1 = Point2::new(0.0, 0.0);
+        let p2 = Point2::new(10.0, 10.0);
+        let s1 = Line2::from_points(p1, p2);
+        let result = s1.is_point_2_on(&Point2::new(3.333333, 3.333333), None);
+        assert_eq!(result, true);
+        let result = s1.is_point_2_on(&Point2::new(3.333334, 3.333333), None);
+        assert_eq!(result, false);
+        let result = s1.is_point_2_on(&Point2::new(20.0, 20.0), None);
+        assert_eq!(result, true);
     }
 }

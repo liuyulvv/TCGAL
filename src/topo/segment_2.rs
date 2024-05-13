@@ -61,6 +61,19 @@ impl Segment2 {
         let res = self.start.get_vector() + ab * t;
         return Some(Point2::from_vector(&res));
     }
+
+    pub fn is_point_2_on(&self, point: &Point2, eps: Option<Eps>) -> bool {
+        let eps = eps.unwrap_or(Eps::default()).value;
+        let ab = self.end - self.start;
+        let ac = *point - self.start;
+        let bc = *point - self.end;
+        let dot_ab_ac = ab.dot(&ac);
+        let dot_ab_ab = ab.dot(&ab);
+        ab.cross(&ac).abs() < eps
+            && ab.cross(&bc).abs() < eps
+            && dot_ab_ac >= -eps
+            && dot_ab_ac <= dot_ab_ab
+    }
 }
 
 impl IsParallel for Segment2 {
@@ -267,5 +280,24 @@ mod tests {
         let s2 = Segment2::new(p3, p4);
         let result = s1.intersection(&s2, None);
         assert_eq!(result, Some(Point2::new(3.333333, 3.333333)));
+    }
+
+    #[test]
+    fn is_point_2_on() {
+        let p1 = Point2::new(1.0, 1.0);
+        let p2 = Point2::new(1.0, 1.0);
+        let s = Segment2::new(p1, p2);
+        let result = s.is_point_2_on(&Point2::new(1.0, 1.0), None);
+        assert_eq!(result, true);
+
+        let p1 = Point2::new(0.0, 0.0);
+        let p2 = Point2::new(10.0, 10.0);
+        let s1 = Segment2::new(p1, p2);
+        let result = s1.is_point_2_on(&Point2::new(3.333333, 3.333333), None);
+        assert_eq!(result, true);
+        let result = s1.is_point_2_on(&Point2::new(3.333334, 3.333333), None);
+        assert_eq!(result, false);
+        let result = s1.is_point_2_on(&Point2::new(20.0, 20.0), None);
+        assert_eq!(result, false);
     }
 }
