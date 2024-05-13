@@ -24,6 +24,7 @@ impl Line2 {
         Self { a, b, c }
     }
 
+    /// overlay is considered as intersect
     pub fn is_intersect(&self, other: &Self, eps: Option<Eps>) -> bool {
         let eps_value = eps.unwrap_or(Eps::default()).value;
         let det = self.a * other.b - self.b * other.a;
@@ -33,6 +34,8 @@ impl Line2 {
         true
     }
 
+    /// TODO: implement overlap
+    /// overlay is not implemented
     pub fn intersection(&self, other: &Self, eps: Option<Eps>) -> Option<Point2> {
         let eps_value = eps.unwrap_or(Eps::default()).value;
         let det = self.a * other.b - self.b * other.a;
@@ -45,12 +48,7 @@ impl Line2 {
         }
         let x = (self.b * other.c - self.c * other.b) / det;
         let y = (self.c * other.a - self.a * other.c) / det;
-        let is_self_on_line = self.a * x + self.b * y - self.c < eps_value;
-        let is_other_on_line = other.a * x + other.b * y - other.c < eps_value;
-        if is_self_on_line || is_other_on_line {
-            return Some(Point2::new(x, y));
-        }
-        return None;
+        return Some(Point2::new(x, y));
     }
 }
 
