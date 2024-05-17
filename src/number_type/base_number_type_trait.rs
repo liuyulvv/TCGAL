@@ -6,8 +6,16 @@ pub trait DefaultNumberValueTrait {
 }
 
 pub trait BaseNumberTypeTrait:
-    Add + Sub + Mul + Div + PartialOrd + Copy + DefaultNumberValueTrait
+    DefaultNumberValueTrait
+    + Add<Output = Self>
+    + Sub<Output = Self>
+    + Mul<Output = Self>
+    + Div<Output = Self>
+    + PartialOrd
+    + Clone
+    + Copy
 {
+    fn sqrt(self) -> Self;
 }
 
 impl DefaultNumberValueTrait for f32 {
@@ -30,6 +38,14 @@ impl DefaultNumberValueTrait for f64 {
     }
 }
 
-impl BaseNumberTypeTrait for f32 {}
+impl BaseNumberTypeTrait for f32 {
+    fn sqrt(self) -> Self {
+        self.sqrt()
+    }
+}
 
-impl BaseNumberTypeTrait for f64 {}
+impl BaseNumberTypeTrait for f64 {
+    fn sqrt(self) -> Self {
+        self.sqrt()
+    }
+}
