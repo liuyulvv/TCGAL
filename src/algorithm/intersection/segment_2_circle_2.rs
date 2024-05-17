@@ -4,6 +4,7 @@ use crate::{
     algorithm::{
         location::{
             location_enum::Point2Circle2Relation, point_2_circle_2::point_2_relation_to_circle_2,
+            point_2_segment_2::is_point_2_on_segment_2,
         },
         projection::point_2_segment_2::point_2_project_segment_2,
     },
@@ -57,7 +58,23 @@ pub fn segment_2_circle_2_intersection_point_2(
         return None;
     }
     if start_relation == Point2Circle2Relation::ON && end_relation == Point2Circle2Relation::ON {
-        return Some(vec![segment_2.start.clone(), segment_2.end.clone()]);
+        let mut result = vec![segment_2.start.clone(), segment_2.end.clone()];
+        result.sort_by(|a, b| {
+            if a.x < b.x {
+                return std::cmp::Ordering::Less;
+            } else if a.x > b.x {
+                return std::cmp::Ordering::Greater;
+            } else {
+                if a.y < b.y {
+                    return std::cmp::Ordering::Less;
+                } else if a.y > b.y {
+                    return std::cmp::Ordering::Greater;
+                } else {
+                    return std::cmp::Ordering::Equal;
+                }
+            }
+        });
+        return Some(result);
     }
     let projection = point_2_project_segment_2(&circle_2.center, segment_2, eps);
     if start_relation == Point2Circle2Relation::OUTSIDE
@@ -91,7 +108,28 @@ pub fn segment_2_circle_2_intersection_point_2(
         projection_point + Point2::from_vector(&(segment_2_direction * offset));
     let intersection_point_2 =
         projection_point + Point2::from_vector(&(segment_2_direction * -offset));
-    return Some(vec![intersection_point_1, intersection_point_2]);
+    let mut result = vec![intersection_point_1, intersection_point_2];
+    result.retain(|point| {
+        let relation = point_2_relation_to_circle_2(point, circle_2, eps);
+        let is_on = is_point_2_on_segment_2(point, segment_2, eps);
+        return relation == Point2Circle2Relation::ON && is_on;
+    });
+    result.sort_by(|a, b| {
+        if a.x < b.x {
+            return std::cmp::Ordering::Less;
+        } else if a.x > b.x {
+            return std::cmp::Ordering::Greater;
+        } else {
+            if a.y < b.y {
+                return std::cmp::Ordering::Less;
+            } else if a.y > b.y {
+                return std::cmp::Ordering::Greater;
+            } else {
+                return std::cmp::Ordering::Equal;
+            }
+        }
+    });
+    return Some(result);
 }
 
 #[cfg(test)]
@@ -151,6 +189,55 @@ mod tests {
         assert_eq!(
             is_segment_2_circle_2_intersected(&segment_2, &circle_2, None),
             true
+        );
+    }
+
+    #[test]
+    fn intersection() {
+        let segment_2 = Segment2::new(Point2::new(0.0, 0.0), Point2::new(1.0, 1.0));
+        let circle_2 = Circle2::new(Point2::new(0.0, 0.0), 1.0);
+        assert_eq!(
+            segment_2_circle_2_intersection_point_2(&segment_2, &circle_2, None),
+            Some(vec![Point2::new(
+                f64::sqrt(2.0) / 2.0,
+                f64::sqrt(2.0) / 2.0
+            ),])
+        );
+
+        let segment_2 = Segment2::new(
+            Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0),
+            Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / 2.0),
+        );
+        let circle_2 = Circle2::new(Point2::new(0.0, 0.0), 1.0);
+        assert_eq!(
+            segment_2_circle_2_intersection_point_2(&segment_2, &circle_2, None),
+            Some(vec![
+                Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / 2.0),
+                Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0)
+            ])
+        );
+
+        let segment_2 = Segment2::new(
+            Point2::new(10.0, f64::sqrt(2.0) / 2.0),
+            Point2::new(-10.0, f64::sqrt(2.0) / 2.0),
+        );
+        let circle_2 = Circle2::new(Point2::new(0.0, 0.0), 1.0);
+        assert_eq!(
+            segment_2_circle_2_intersection_point_2(&segment_2, &circle_2, None),
+            Some(vec![
+                Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / 2.0),
+                Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0)
+            ])
+        );
+
+        let segment_2 = Segment2::new(Point2::new(10.0, 10.0), Point2::new(-10.0, -10.0));
+        let circle_2 = Circle2::new(Point2::new(0.0, 0.0), 1.0);
+        assert_eq!(
+            segment_2_circle_2_intersection_point_2(&segment_2, &circle_2, None),
+            Some(vec![
+                Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / -2.0),
+                Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0)
+            ])
         );
     }
 }
