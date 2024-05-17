@@ -45,6 +45,9 @@ pub fn is_segment_2_circle_2_intersected(
     return true;
 }
 
+/// Returns the intersection points of the segment and the circle.
+/// If there are no intersection points, return None.
+/// If there are intersection points, return the intersection points, the order of the points is Y from top to bottom, and X from left to right.
 pub fn segment_2_circle_2_intersection_point_2(
     segment_2: &Segment2,
     circle_2: &Circle2,
@@ -60,18 +63,10 @@ pub fn segment_2_circle_2_intersection_point_2(
     if start_relation == Point2Circle2Relation::ON && end_relation == Point2Circle2Relation::ON {
         let mut result = vec![segment_2.start.clone(), segment_2.end.clone()];
         result.sort_by(|a, b| {
-            if a.x < b.x {
+            if a.y > b.y || (a.y == b.y && a.x < b.x) {
                 return std::cmp::Ordering::Less;
-            } else if a.x > b.x {
-                return std::cmp::Ordering::Greater;
             } else {
-                if a.y < b.y {
-                    return std::cmp::Ordering::Less;
-                } else if a.y > b.y {
-                    return std::cmp::Ordering::Greater;
-                } else {
-                    return std::cmp::Ordering::Equal;
-                }
+                return std::cmp::Ordering::Greater;
             }
         });
         return Some(result);
@@ -115,18 +110,10 @@ pub fn segment_2_circle_2_intersection_point_2(
         return relation == Point2Circle2Relation::ON && is_on;
     });
     result.sort_by(|a, b| {
-        if a.x < b.x {
+        if a.y > b.y || (a.y == b.y && a.x < b.x) {
             return std::cmp::Ordering::Less;
-        } else if a.x > b.x {
-            return std::cmp::Ordering::Greater;
         } else {
-            if a.y < b.y {
-                return std::cmp::Ordering::Less;
-            } else if a.y > b.y {
-                return std::cmp::Ordering::Greater;
-            } else {
-                return std::cmp::Ordering::Equal;
-            }
+            return std::cmp::Ordering::Greater;
         }
     });
     return Some(result);
@@ -235,8 +222,8 @@ mod tests {
         assert_eq!(
             segment_2_circle_2_intersection_point_2(&segment_2, &circle_2, None),
             Some(vec![
-                Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / -2.0),
-                Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0)
+                Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0),
+                Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / -2.0)
             ])
         );
     }
