@@ -25,3 +25,13 @@ impl<T: BaseNumberTypeTrait> Point2<T> {
         self.y
     }
 }
+
+impl<T: BaseNumberTypeTrait> PartialEq for Point2<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y
+    }
+
+    fn ne(&self, other: &Self) -> bool {
+        !self.eq(other)
+    }
+}
