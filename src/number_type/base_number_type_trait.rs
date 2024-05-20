@@ -16,6 +16,7 @@ pub trait BaseNumberTypeTrait:
     + Copy
 {
     fn sqrt(self) -> Self;
+    fn abs(self) -> Self;
 }
 
 impl DefaultNumberValueTrait for f32 {
@@ -42,10 +43,18 @@ impl BaseNumberTypeTrait for f32 {
     fn sqrt(self) -> Self {
         self.sqrt()
     }
+
+    fn abs(self) -> Self {
+        self.abs()
+    }
 }
 
 impl BaseNumberTypeTrait for f64 {
     fn sqrt(self) -> Self {
         self.sqrt()
+    }
+
+    fn abs(self) -> Self {
+        self.abs()
     }
 }
