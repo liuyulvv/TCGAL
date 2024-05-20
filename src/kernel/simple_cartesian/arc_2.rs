@@ -1,35 +1,42 @@
-use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
+use crate::{
+    kernel::base_kernel::{
+        base_arc_2::BaseArc2, base_circle_2::BaseCircle2, base_point_2::BasePoint2,
+    },
+    number_type::base_number_type_trait::BaseNumberTypeTrait,
+};
 
 use super::{circle_2::Circle2, point_2::Point2};
 
-pub struct Arc2<T: BaseNumberTypeTrait> {
-    support: Circle2<T>,
-    source: Point2<T>,
-    target: Point2<T>,
+pub struct Arc2<'a, T: BaseNumberTypeTrait> {
+    support: &'a Circle2<'a, T>,
+    source: &'a Point2<T>,
+    target: &'a Point2<T>,
 }
 
-impl<T: BaseNumberTypeTrait> Arc2<T> {
-    pub fn new(support: Circle2<T>, source: Point2<T>, target: Point2<T>) -> Self {
+impl<'a, T: BaseNumberTypeTrait> Arc2<'a, T> {
+    pub fn new(support: &'a Circle2<T>, source: &'a Point2<T>, target: &'a Point2<T>) -> Self {
         Self {
             support,
             source,
             target,
         }
     }
+}
 
-    pub fn center(&self) -> Point2<T> {
+impl<'a, T: BaseNumberTypeTrait> BaseArc2<'a, T> for Arc2<'a, T> {
+    fn center(&self) -> Box<dyn BasePoint2<T> + 'a> {
         self.support.center()
     }
 
-    pub fn radius(&self) -> T {
+    fn radius(&self) -> T {
         self.support.radius()
     }
 
-    pub fn source(&self) -> Point2<T> {
-        return self.source;
+    fn source(&self) -> Box<dyn BasePoint2<T> + 'a> {
+        Box::new(*self.source)
     }
 
-    pub fn target(&self) -> Point2<T> {
-        return self.target;
+    fn target(&self) -> Box<dyn BasePoint2<T> + 'a> {
+        Box::new(*self.target)
     }
 }

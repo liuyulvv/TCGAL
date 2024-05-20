@@ -1,4 +1,7 @@
-use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
+use crate::{
+    kernel::base_kernel::base_line_2::BaseLine2,
+    number_type::base_number_type_trait::BaseNumberTypeTrait,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Line2<T: BaseNumberTypeTrait> {
@@ -11,16 +14,18 @@ impl<T: BaseNumberTypeTrait> Line2<T> {
     pub fn new(a: T, b: T, c: T) -> Self {
         Self { a, b, c }
     }
+}
 
-    pub fn a(&self) -> T {
+impl<T: BaseNumberTypeTrait> BaseLine2<T> for Line2<T> {
+    fn a(&self) -> T {
         self.a
     }
 
-    pub fn b(&self) -> T {
+    fn b(&self) -> T {
         self.b
     }
 
-    pub fn c(&self) -> T {
+    fn c(&self) -> T {
         self.c
     }
 }

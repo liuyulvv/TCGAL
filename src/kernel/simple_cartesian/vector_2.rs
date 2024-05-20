@@ -1,6 +1,9 @@
 use std::ops::{Add, Div, Mul, Sub};
 
-use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
+use crate::{
+    kernel::base_kernel::base_vector_2::BaseVector2,
+    number_type::base_number_type_trait::BaseNumberTypeTrait,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector2<T: BaseNumberTypeTrait> {
@@ -19,20 +22,22 @@ impl<T: BaseNumberTypeTrait> Vector2<T> {
             y: T::default(),
         }
     }
+}
 
-    pub fn x(&self) -> T {
+impl<T: BaseNumberTypeTrait> BaseVector2<T> for Vector2<T> {
+    fn x(&self) -> T {
         self.x
     }
 
-    pub fn y(&self) -> T {
+    fn y(&self) -> T {
         self.y
     }
 
-    pub fn length(&self) -> T {
+    fn length(&self) -> T {
         (self.x * self.x + self.y * self.y).sqrt()
     }
 
-    pub fn normalize(&self) -> Self {
+    fn normalize(&self) -> Self {
         let length = self.length();
         let eps = T::default_eps();
         if length < eps {
@@ -44,11 +49,11 @@ impl<T: BaseNumberTypeTrait> Vector2<T> {
         }
     }
 
-    pub fn dot(&self, other: &Self) -> T {
+    fn dot(&self, other: &Self) -> T {
         self.x * other.x + self.y * other.y
     }
 
-    pub fn cross(&self, other: &Self) -> T {
+    fn cross(&self, other: &Self) -> T {
         self.x * other.y - self.y * other.x
     }
 }

@@ -1,4 +1,7 @@
-use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
+use crate::{
+    kernel::base_kernel::base_point_2::BasePoint2,
+    number_type::base_number_type_trait::BaseNumberTypeTrait,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point2<T: BaseNumberTypeTrait> {
@@ -17,12 +20,14 @@ impl<T: BaseNumberTypeTrait> Point2<T> {
             y: T::default(),
         }
     }
+}
 
-    pub fn x(&self) -> T {
+impl<T: BaseNumberTypeTrait> BasePoint2<T> for Point2<T> {
+    fn x(&self) -> T {
         self.x
     }
 
-    pub fn y(&self) -> T {
+    fn y(&self) -> T {
         self.y
     }
 }
