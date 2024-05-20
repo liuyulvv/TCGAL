@@ -4,8 +4,8 @@ use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Vector2<T: BaseNumberTypeTrait> {
-    pub x: T,
-    pub y: T,
+    x: T,
+    y: T,
 }
 
 impl<T: BaseNumberTypeTrait> Vector2<T> {
@@ -18,6 +18,14 @@ impl<T: BaseNumberTypeTrait> Vector2<T> {
             x: T::default(),
             y: T::default(),
         }
+    }
+
+    pub fn x(&self) -> T {
+        self.x
+    }
+
+    pub fn y(&self) -> T {
+        self.y
     }
 
     pub fn length(&self) -> T {
