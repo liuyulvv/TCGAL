@@ -1,4 +1,7 @@
-use std::ops::{Add, Div, Mul, Neg, Sub};
+use std::{
+    fmt::Debug,
+    ops::{Add, Div, Mul, Neg, Sub},
+};
 
 pub trait DefaultNumberValueTrait {
     fn default() -> Self;
@@ -15,6 +18,7 @@ pub trait BaseNumberTypeTrait:
     + PartialOrd
     + Clone
     + Copy
+    + Debug
 {
     fn sqrt(self) -> Self;
     fn abs(self) -> Self;
