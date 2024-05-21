@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 pub trait DefaultNumberValueTrait {
     fn default() -> Self;
@@ -11,6 +11,7 @@ pub trait BaseNumberTypeTrait:
     + Sub<Output = Self>
     + Mul<Output = Self>
     + Div<Output = Self>
+    + Neg<Output = Self>
     + PartialOrd
     + Clone
     + Copy
