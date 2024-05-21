@@ -7,14 +7,15 @@ use crate::{
 
 use super::{circle_2::Circle2, point_2::Point2};
 
-pub struct Arc2<'a, T: BaseNumberTypeTrait> {
-    support: &'a Circle2<'a, T>,
-    source: &'a Point2<T>,
-    target: &'a Point2<T>,
+#[derive(Debug, Clone, Copy)]
+pub struct Arc2<'a, NT: BaseNumberTypeTrait> {
+    support: &'a Circle2<'a, NT>,
+    source: &'a Point2<NT>,
+    target: &'a Point2<NT>,
 }
 
-impl<'a, T: BaseNumberTypeTrait> Arc2<'a, T> {
-    pub fn new(support: &'a Circle2<T>, source: &'a Point2<T>, target: &'a Point2<T>) -> Self {
+impl<'a, NT: BaseNumberTypeTrait> Arc2<'a, NT> {
+    pub fn new(support: &'a Circle2<NT>, source: &'a Point2<NT>, target: &'a Point2<NT>) -> Self {
         Self {
             support,
             source,
@@ -23,20 +24,31 @@ impl<'a, T: BaseNumberTypeTrait> Arc2<'a, T> {
     }
 }
 
-impl<'a, T: BaseNumberTypeTrait> BaseArc2<'a, T> for Arc2<'a, T> {
-    fn center(&self) -> Box<dyn BasePoint2<T> + 'a> {
+impl<'a, NT: BaseNumberTypeTrait> BaseArc2<'a, NT> for Arc2<'a, NT> {
+    type Circle2 = Circle2<'a, NT>;
+    type Point2 = Point2<NT>;
+
+    fn new(support: &'a Circle2<NT>, source: &'a Self::Point2, target: &'a Self::Point2) -> Self {
+        Self {
+            support,
+            source,
+            target,
+        }
+    }
+
+    fn center(&self) -> Self::Point2 {
         self.support.center()
     }
 
-    fn radius(&self) -> T {
+    fn radius(&self) -> NT {
         self.support.radius()
     }
 
-    fn source(&self) -> Box<dyn BasePoint2<T> + 'a> {
-        Box::new(*self.source)
+    fn source(&self) -> Self::Point2 {
+        Self::Point2::new(self.source.x(), self.source.y())
     }
 
-    fn target(&self) -> Box<dyn BasePoint2<T> + 'a> {
-        Box::new(*self.target)
+    fn target(&self) -> Self::Point2 {
+        Self::Point2::new(self.target.x(), self.target.y())
     }
 }

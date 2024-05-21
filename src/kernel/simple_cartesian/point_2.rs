@@ -1,38 +1,51 @@
+use std::ops::{Add, Sub};
+
 use crate::{
-    kernel::base_kernel::base_point_2::BasePoint2,
+    kernel::base_kernel::{base_point_2::BasePoint2, base_vector_2::BaseVector2},
     number_type::base_number_type_trait::BaseNumberTypeTrait,
 };
 
+use super::vector_2::Vector2;
+
 #[derive(Debug, Clone, Copy)]
-pub struct Point2<T: BaseNumberTypeTrait> {
-    x: T,
-    y: T,
+pub struct Point2<NT: BaseNumberTypeTrait> {
+    x: NT,
+    y: NT,
 }
 
-impl<T: BaseNumberTypeTrait> Point2<T> {
-    pub fn new(x: T, y: T) -> Self {
+impl<NT: BaseNumberTypeTrait> BasePoint2<NT> for Point2<NT> {
+    type Vector2 = Vector2<NT>;
+
+    fn new(x: NT, y: NT) -> Self {
         Self { x, y }
     }
 
-    pub fn default() -> Self {
-        Self {
-            x: T::default(),
-            y: T::default(),
-        }
-    }
-}
-
-impl<T: BaseNumberTypeTrait> BasePoint2<T> for Point2<T> {
-    fn x(&self) -> T {
+    fn x(&self) -> NT {
         self.x
     }
 
-    fn y(&self) -> T {
+    fn y(&self) -> NT {
         self.y
     }
 }
 
-impl<T: BaseNumberTypeTrait> PartialEq for Point2<T> {
+impl<NT: BaseNumberTypeTrait> Add for Point2<NT> {
+    type Output = Vector2<NT>;
+
+    fn add(self, other: Self) -> Self::Output {
+        Vector2::new(self.x + other.x(), self.y + other.y())
+    }
+}
+
+impl<NT: BaseNumberTypeTrait> Sub for Point2<NT> {
+    type Output = Vector2<NT>;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Vector2::new(self.x - other.x(), self.y - other.y())
+    }
+}
+
+impl<NT: BaseNumberTypeTrait> PartialEq for Point2<NT> {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y
     }
