@@ -11,6 +11,7 @@ pub trait BasePoint2<NT: BaseNumberTypeTrait>:
     Add<Output = Self::Vector2> + Sub<Output = Self::Vector2> + Copy + Clone + Sized + Debug
 {
     type Vector2: BaseVector2<NT>;
+
     fn new(x: NT, y: NT) -> Self;
     fn x(&self) -> NT;
     fn y(&self) -> NT;
