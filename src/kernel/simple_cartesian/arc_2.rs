@@ -8,14 +8,14 @@ use crate::{
 use super::{circle_2::Circle2, point_2::Point2};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Arc2<'a, NT: BaseNumberTypeTrait> {
-    support: &'a Circle2<'a, NT>,
-    source: &'a Point2<NT>,
-    target: &'a Point2<NT>,
+pub struct Arc2<NT: BaseNumberTypeTrait> {
+    support: Circle2<NT>,
+    source: Point2<NT>,
+    target: Point2<NT>,
 }
 
-impl<'a, NT: BaseNumberTypeTrait> Arc2<'a, NT> {
-    pub fn new(support: &'a Circle2<NT>, source: &'a Point2<NT>, target: &'a Point2<NT>) -> Self {
+impl<NT: BaseNumberTypeTrait> Arc2<NT> {
+    pub fn new(support: Circle2<NT>, source: Point2<NT>, target: Point2<NT>) -> Self {
         Self {
             support,
             source,
@@ -24,11 +24,11 @@ impl<'a, NT: BaseNumberTypeTrait> Arc2<'a, NT> {
     }
 }
 
-impl<'a, NT: BaseNumberTypeTrait> BaseArc2<'a, NT> for Arc2<'a, NT> {
-    type Circle2 = Circle2<'a, NT>;
+impl<NT: BaseNumberTypeTrait> BaseArc2<NT> for Arc2<NT> {
+    type Circle2 = Circle2<NT>;
     type Point2 = Point2<NT>;
 
-    fn new(support: &'a Circle2<NT>, source: &'a Self::Point2, target: &'a Self::Point2) -> Self {
+    fn new(support: Circle2<NT>, source: Self::Point2, target: Self::Point2) -> Self {
         Self {
             support,
             source,

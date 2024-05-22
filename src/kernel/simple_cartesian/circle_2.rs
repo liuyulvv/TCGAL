@@ -6,15 +6,15 @@ use crate::{
 use super::point_2::Point2;
 
 #[derive(Debug, Clone, Copy)]
-pub struct Circle2<'a, NT: BaseNumberTypeTrait> {
-    center: &'a Point2<NT>,
+pub struct Circle2<NT: BaseNumberTypeTrait> {
+    center: Point2<NT>,
     radius: NT,
 }
 
-impl<'a, NT: BaseNumberTypeTrait> BaseCircle2<'a, NT> for Circle2<'a, NT> {
+impl<NT: BaseNumberTypeTrait> BaseCircle2<NT> for Circle2<NT> {
     type Point2 = Point2<NT>;
 
-    fn new(center: &'a Self::Point2, radius: NT) -> Self {
+    fn new(center: Self::Point2, radius: NT) -> Self {
         Self { center, radius }
     }
 

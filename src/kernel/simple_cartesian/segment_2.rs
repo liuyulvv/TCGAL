@@ -6,15 +6,15 @@ use crate::{
 use super::point_2::Point2;
 
 #[derive(Debug, Clone, Copy)]
-pub struct Segment2<'a, NT: BaseNumberTypeTrait> {
-    source: &'a Point2<NT>,
-    target: &'a Point2<NT>,
+pub struct Segment2<NT: BaseNumberTypeTrait> {
+    source: Point2<NT>,
+    target: Point2<NT>,
 }
 
-impl<'a, NT: BaseNumberTypeTrait> BaseSegment2<'a, NT> for Segment2<'a, NT> {
+impl<NT: BaseNumberTypeTrait> BaseSegment2<NT> for Segment2<NT> {
     type Point2 = Point2<NT>;
 
-    fn new(source: &'a Point2<NT>, target: &'a Point2<NT>) -> Self {
+    fn new(source: Point2<NT>, target: Point2<NT>) -> Self {
         Self { source, target }
     }
 
