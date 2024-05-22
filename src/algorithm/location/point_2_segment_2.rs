@@ -15,9 +15,9 @@ pub enum Point2Segment2Location {
 
 pub fn is_point_2_on_segment_2<'a, NT, T>(point_2: T::Point2, segment_2: T) -> bool
 where
+    NT: BaseNumberTypeTrait,
     T: BaseSegment2<'a, NT>,
     T::Point2: BasePoint2<NT>,
-    NT: BaseNumberTypeTrait,
 {
     let source = segment_2.source();
     let target = segment_2.target();
