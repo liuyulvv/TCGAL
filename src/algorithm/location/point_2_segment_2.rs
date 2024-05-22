@@ -38,9 +38,9 @@ pub fn locate_point_2_segment_2<'a, NT, T>(
     segment_2: T,
 ) -> Point2Segment2Location
 where
+    NT: BaseNumberTypeTrait,
     T: BaseSegment2<'a, NT>,
     T::Point2: BasePoint2<NT>,
-    NT: BaseNumberTypeTrait,
 {
     let source = segment_2.source();
     let target = segment_2.target();
