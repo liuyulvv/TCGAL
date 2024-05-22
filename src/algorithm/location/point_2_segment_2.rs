@@ -13,17 +13,17 @@ pub enum Point2Segment2Location {
     Collinear,
 }
 
-pub fn is_point_2_on_segment_2<'a, NT, T>(point_2: T::Point2, segment_2: T) -> bool
+pub fn is_point_2_on_segment_2<NT, T>(point_2: &T::Point2, segment_2: &T) -> bool
 where
     NT: BaseNumberTypeTrait,
-    T: BaseSegment2<'a, NT>,
+    T: BaseSegment2<NT>,
     T::Point2: BasePoint2<NT>,
 {
     let source = segment_2.source();
     let target = segment_2.target();
     let vec_ab = target - source;
-    let vec_ac = point_2 - source;
-    let vec_bc = point_2 - target;
+    let vec_ac = *point_2 - source;
+    let vec_bc = *point_2 - target;
     let dot_ab_ac = vec_ab.dot(&vec_ac);
     let dot_ab_ab = vec_ab.dot(&vec_ab);
     let eps = NT::default_eps();
@@ -33,19 +33,16 @@ where
         && dot_ab_ac <= dot_ab_ab
 }
 
-pub fn locate_point_2_segment_2<'a, NT, T>(
-    point_2: T::Point2,
-    segment_2: T,
-) -> Point2Segment2Location
+pub fn locate_point_2_segment_2<NT, T>(point_2: &T::Point2, segment_2: &T) -> Point2Segment2Location
 where
     NT: BaseNumberTypeTrait,
-    T: BaseSegment2<'a, NT>,
+    T: BaseSegment2<NT>,
     T::Point2: BasePoint2<NT>,
 {
     let source = segment_2.source();
     let target = segment_2.target();
     let vec_ab = target - source;
-    let vec_ac = point_2 - source;
+    let vec_ac = *point_2 - source;
     let area = vec_ab.cross(&vec_ac);
     if area > NT::default_eps() {
         Point2Segment2Location::Left
@@ -73,66 +70,75 @@ mod tests {
     fn test_is_point_2_on_segment_2() {
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
-        let s = Segment2::new(&p1, &p2);
+        let s = Segment2::new(p1, p2);
 
-        assert_eq!(is_point_2_on_segment_2(p1, s), true);
+        assert_eq!(is_point_2_on_segment_2(&p1, &s), true);
 
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
-        let s = Segment2::new(&p1, &p2);
+        let s = Segment2::new(p1, p2);
 
         let p3 = Point2::new(5.0, 5.0);
-        assert_eq!(is_point_2_on_segment_2(p3, s), true);
+        assert_eq!(is_point_2_on_segment_2(&p3, &s), true);
 
         let p3 = Point2::new(5.0, 5.1);
-        assert_eq!(is_point_2_on_segment_2(p3, s), false);
+        assert_eq!(is_point_2_on_segment_2(&p3, &s), false);
 
         let p3 = Point2::new(f64::sqrt(3.0), f64::sqrt(3.0));
-        assert_eq!(is_point_2_on_segment_2(p3, s), true);
+        assert_eq!(is_point_2_on_segment_2(&p3, &s), true);
     }
 
     #[test]
     fn test_locate_point_2_segment_2() {
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
-        let s = Segment2::new(&p1, &p2);
+        let s = Segment2::new(p1, p2);
 
         let p3 = Point2::new(5.0, 5.0);
-        assert_eq!(locate_point_2_segment_2(p3, s), Point2Segment2Location::On);
+        assert_eq!(
+            locate_point_2_segment_2(&p3, &s),
+            Point2Segment2Location::On
+        );
 
         let p3 = Point2::new(5.0, 5.1);
         assert_eq!(
-            locate_point_2_segment_2(p3, s),
+            locate_point_2_segment_2(&p3, &s),
             Point2Segment2Location::Left
         );
 
         let p3 = Point2::new(5.0, 4.9);
         assert_eq!(
-            locate_point_2_segment_2(p3, s),
+            locate_point_2_segment_2(&p3, &s),
             Point2Segment2Location::Right
         );
 
         let p3 = Point2::new(0.0, 0.0);
-        assert_eq!(locate_point_2_segment_2(p3, s), Point2Segment2Location::On);
+        assert_eq!(
+            locate_point_2_segment_2(&p3, &s),
+            Point2Segment2Location::On
+        );
 
         let p3 = Point2::new(10.0, 10.0);
-        assert_eq!(locate_point_2_segment_2(p3, s), Point2Segment2Location::On);
+        assert_eq!(
+            locate_point_2_segment_2(&p3, &s),
+            Point2Segment2Location::On
+        );
 
         let p3 = Point2::new(10.0, 10.1);
         assert_eq!(
-            locate_point_2_segment_2(p3, s),
+            locate_point_2_segment_2(&p3, &s),
             Point2Segment2Location::Left
         );
 
         let p3 = Point2::new(10.0, 9.9);
         assert_eq!(
-            locate_point_2_segment_2(p3, s),
+            locate_point_2_segment_2(&p3, &s),
             Point2Segment2Location::Right
         );
 
         let p3 = Point2::new(-10.0, -10.0);
         assert_eq!(
-            locate_point_2_segment_2(p3, s),
+            locate_point_2_segment_2(&p3, &s),
             Point2Segment2Location::Collinear
         );
     }
