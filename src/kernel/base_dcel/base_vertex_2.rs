@@ -4,10 +4,13 @@ use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
 
 use super::base_edge_2::BaseEdge2;
 
-pub trait BaseVertex2<'a, NT: BaseNumberTypeTrait>: Copy + Clone + Sized + Debug {
+pub trait BaseVertex2<'a, NT: BaseNumberTypeTrait>: Clone + Sized + Debug + PartialEq {
     type Edge: BaseEdge2<'a, NT>;
 
+    fn new(x: NT, y: NT) -> Self;
     fn x(&self) -> NT;
     fn y(&self) -> NT;
-    fn edges(&self) -> Vec<Self::Edge>;
+    fn edges(&self) -> Vec<&Self::Edge>;
+    fn add_edge(&mut self, edge: &'a Self::Edge);
+    fn remove_edge(&mut self, edge: &'a Self::Edge);
 }
