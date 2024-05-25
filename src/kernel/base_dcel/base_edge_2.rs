@@ -14,19 +14,19 @@ pub trait BaseEdge2<'a, NT: BaseNumberTypeTrait>: Clone + Sized + Debug + Partia
     type Vertex: BaseVertex2<'a, NT>;
     type Face: BaseFace2<'a, NT>;
 
-    fn new_segment(source: &Self::Vertex, target: &Self::Vertex) -> Self;
-    fn new_arc(source: &Self::Vertex, target: &Self::Vertex) -> Self;
+    fn new_segment(source: &'a Self::Vertex, target: &'a Self::Vertex) -> Self;
+    fn new_arc(source: &'a Self::Vertex, target: &'a Self::Vertex) -> Self;
     fn source(&self) -> &Self::Vertex;
-    fn set_source(&mut self, source: &Self::Vertex);
+    fn set_source(&mut self, source: &'a Self::Vertex);
     fn target(&self) -> &Self::Vertex;
-    fn set_target(&mut self, target: &Self::Vertex);
+    fn set_target(&mut self, target: &'a Self::Vertex);
     fn twin(&self) -> Option<&Self>;
-    fn set_twin(&mut self, twin: &Self);
+    fn set_twin(&mut self, twin: &'a Self);
     fn next(&self) -> Option<&Self>;
-    fn set_next(&mut self, next: &Self);
+    fn set_next(&mut self, next: &'a Self);
     fn prev(&self) -> Option<&Self>;
-    fn set_prev(&mut self, prev: &Self);
+    fn set_prev(&mut self, prev: &'a Self);
     fn face(&self) -> Option<&Self::Face>;
-    fn set_face(&mut self, face: &Self::Face);
+    fn set_face(&mut self, face: &'a Self::Face);
     fn edge_type(&self) -> BaseEdge2Type;
 }
