@@ -20,7 +20,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
     type Vertex = Vertex2<'a, NT>;
     type Face = Face2<'a, NT>;
 
-    fn new_segment(source: &Self::Vertex, target: &Self::Vertex) -> Self {
+    fn new_segment(source: &'a Self::Vertex, target: &'a Self::Vertex) -> Self {
         Self {
             source,
             target,
@@ -32,7 +32,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         }
     }
 
-    fn new_arc(source: &Self::Vertex, target: &Self::Vertex) -> Self {
+    fn new_arc(source: &'a Self::Vertex, target: &'a Self::Vertex) -> Self {
         Self {
             source,
             target,
@@ -48,7 +48,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         self.source
     }
 
-    fn set_source(&mut self, source: &Self::Vertex) {
+    fn set_source(&mut self, source: &'a Self::Vertex) {
         self.source = source
     }
 
@@ -56,7 +56,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         self.target
     }
 
-    fn set_target(&mut self, target: &Self::Vertex) {
+    fn set_target(&mut self, target: &'a Self::Vertex) {
         self.target = target
     }
 
@@ -64,7 +64,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         self.twin
     }
 
-    fn set_twin(&mut self, twin: &Self) {
+    fn set_twin(&mut self, twin: &'a Self) {
         self.twin = Some(twin)
     }
 
@@ -72,7 +72,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         self.next
     }
 
-    fn set_next(&mut self, next: &Self) {
+    fn set_next(&mut self, next: &'a Self) {
         self.next = Some(next)
     }
 
@@ -80,7 +80,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         self.prev
     }
 
-    fn set_prev(&mut self, prev: &Self) {
+    fn set_prev(&mut self, prev: &'a Self) {
         self.prev = Some(prev)
     }
 
@@ -88,7 +88,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
         self.face.as_ref()
     }
 
-    fn set_face(&mut self, face: &Self::Face) {
+    fn set_face(&mut self, face: &'a Self::Face) {
         self.face = Some(face.clone())
     }
 
@@ -99,7 +99,6 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
 
 impl<'a, NT: BaseNumberTypeTrait> PartialEq for Edge2<'a, NT> {
     fn eq(&self, other: &Self) -> bool {
-        // self.x == other.x && self.y == other.y
-        true
+        std::ptr::eq(self, other)
     }
 }

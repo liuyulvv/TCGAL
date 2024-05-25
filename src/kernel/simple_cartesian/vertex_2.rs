@@ -31,8 +31,8 @@ impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
         self.y
     }
 
-    fn edges(&self) -> Vec<&Self::Edge> {
-        self.edges.clone()
+    fn edges(&self) -> &Vec<&Self::Edge> {
+        &self.edges
     }
 
     fn add_edge(&mut self, edge: &'a Self::Edge) {
@@ -46,7 +46,6 @@ impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
 
 impl<'a, NT: BaseNumberTypeTrait> PartialEq for Vertex2<'a, NT> {
     fn eq(&self, other: &Self) -> bool {
-        // self.x == other.x && self.y == other.y
-        true
+        std::ptr::eq(self, other)
     }
 }

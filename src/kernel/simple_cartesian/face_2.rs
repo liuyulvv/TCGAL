@@ -13,14 +13,13 @@ pub struct Face2<'a, NT: BaseNumberTypeTrait> {
 impl<'a, NT: BaseNumberTypeTrait> BaseFace2<'a, NT> for Face2<'a, NT> {
     type Edge = Edge2<'a, NT>;
 
-    fn edges(&self) -> Vec<&Self::Edge> {
-        todo!()
+    fn edges(&self) -> &Vec<&Self::Edge> {
+        &self.edges
     }
 }
 
 impl<'a, NT: BaseNumberTypeTrait> PartialEq for Face2<'a, NT> {
     fn eq(&self, other: &Self) -> bool {
-        // self.x == other.x && self.y == other.y
-        true
+        std::ptr::eq(self, other)
     }
 }
