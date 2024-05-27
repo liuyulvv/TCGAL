@@ -27,6 +27,15 @@ impl<NT: BaseNumberTypeTrait> BasePoint2<NT> for Point2<NT> {
     fn y(&self) -> NT {
         self.y
     }
+
+    fn equals(&self, other: &Self) -> bool {
+        let eps = NT::default_eps();
+        (self.x - other.x).abs() < eps && (self.y - other.y).abs() < eps
+    }
+
+    fn get_vector(&self) -> Self::Vector2 {
+        Vector2::new(self.x, self.y)
+    }
 }
 
 impl<NT: BaseNumberTypeTrait> Add for Point2<NT> {
@@ -52,5 +61,24 @@ impl<NT: BaseNumberTypeTrait> PartialEq for Point2<NT> {
 
     fn ne(&self, other: &Self) -> bool {
         !self.eq(other)
+    }
+}
+
+impl<NT: BaseNumberTypeTrait> PartialOrd for Point2<NT> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if self.equals(other) {
+            return Some(std::cmp::Ordering::Equal);
+        }
+        if self.x < other.x {
+            Some(std::cmp::Ordering::Less)
+        } else if self.x > other.x {
+            Some(std::cmp::Ordering::Greater)
+        } else if self.y < other.y {
+            Some(std::cmp::Ordering::Less)
+        } else if self.y > other.y {
+            Some(std::cmp::Ordering::Greater)
+        } else {
+            Some(std::cmp::Ordering::Equal)
+        }
     }
 }
