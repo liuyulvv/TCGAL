@@ -42,6 +42,12 @@ impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
     fn remove_edge(&mut self, edge: &'a Self::Edge) {
         self.edges.retain(|e| e != &edge);
     }
+
+    fn equals(&self, other: &Self) -> bool {
+        let eps = NT::default_eps();
+        ((self.x - other.x) * (self.x - other.x) + (self.y - other.y) * (self.y - other.y)).sqrt()
+            < eps
+    }
 }
 
 impl<'a, NT: BaseNumberTypeTrait> PartialEq for Vertex2<'a, NT> {

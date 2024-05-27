@@ -13,4 +13,5 @@ pub trait BaseVertex2<'a, NT: BaseNumberTypeTrait>: Clone + Sized + Debug + Part
     fn edges(&self) -> &Vec<&Self::Edge>;
     fn add_edge(&mut self, edge: &'a Self::Edge);
     fn remove_edge(&mut self, edge: &'a Self::Edge);
+    fn equals(&self, other: &Self) -> bool;
 }
