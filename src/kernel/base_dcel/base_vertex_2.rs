@@ -4,7 +4,9 @@ use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
 
 use super::base_edge_2::BaseEdge2;
 
-pub trait BaseVertex2<'a, NT: BaseNumberTypeTrait>: Clone + Sized + Debug + PartialEq {
+pub trait BaseVertex2<'a, NT: BaseNumberTypeTrait>:
+    Clone + Sized + Debug + PartialEq + PartialOrd
+{
     type Edge: BaseEdge2<'a, NT>;
 
     fn new(x: NT, y: NT) -> Self;
