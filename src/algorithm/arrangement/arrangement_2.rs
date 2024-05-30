@@ -1,7 +1,10 @@
 use crate::{
-    algorithm::arrangement::util::{
-        event_queue::EventQueue, event_vertex_2::EventVertex2Type,
-        status_structure::StatusStructure,
+    algorithm::{
+        arrangement::util::{
+            event_queue::EventQueue, event_vertex_2::EventVertex2Type,
+            status_structure::StatusStructure,
+        },
+        intersection::edge_2_edge_2::edge_2_edge_2_intersection,
     },
     kernel::base_dcel::{base_arrangement_2::BaseArrangement2, base_edge_2::BaseEdge2},
     number_type::base_number_type_trait::BaseNumberTypeTrait,
@@ -50,7 +53,11 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> BaseArrangement2<'a, NT>
                                     Some(neighbors) => {
                                         match neighbors.left {
                                             Some(left) => {
-                                                println!("left: {:#?}", left);
+                                                let intersection =
+                                                    edge_2_edge_2_intersection(left, e);
+                                                intersection.iter().for_each(|point| {
+                                                    println!("Intersection: {:#?}", point);
+                                                });
                                             }
                                             None => {}
                                         }
@@ -110,7 +117,7 @@ mod tests {
         let mut edges = Vec::new();
 
         let source = Vertex2::new(10.0, 0.0);
-        let target = Vertex2::new(20.0, 8.0);
+        let target = Vertex2::new(0.0, 10.0);
         let edge = Edge2::new_segment(&source, &target);
         edges.push(edge);
 
