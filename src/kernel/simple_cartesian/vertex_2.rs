@@ -1,9 +1,9 @@
 use crate::{
-    kernel::base_dcel::base_vertex_2::BaseVertex2,
+    kernel::{base_dcel::base_vertex_2::BaseVertex2, base_kernel::base_point_2::BasePoint2},
     number_type::base_number_type_trait::BaseNumberTypeTrait,
 };
 
-use super::edge_2::Edge2;
+use super::{edge_2::Edge2, point_2::Point2};
 
 #[derive(Debug, Clone)]
 pub struct Vertex2<'a, NT: BaseNumberTypeTrait> {
@@ -13,6 +13,7 @@ pub struct Vertex2<'a, NT: BaseNumberTypeTrait> {
 }
 
 impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
+    type Point = Point2<NT>;
     type Edge = Edge2<'a, NT>;
 
     fn new(x: NT, y: NT) -> Self {
@@ -47,6 +48,10 @@ impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
         let eps = NT::default_eps();
         ((self.x - other.x) * (self.x - other.x) + (self.y - other.y) * (self.y - other.y)).sqrt()
             < eps
+    }
+
+    fn to_point(&self) -> Self::Point {
+        Point2::new(self.x, self.y)
     }
 }
 

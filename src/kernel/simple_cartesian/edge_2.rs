@@ -1,9 +1,15 @@
 use crate::{
-    kernel::base_dcel::base_edge_2::{BaseEdge2, BaseEdge2Type},
+    kernel::{
+        base_dcel::{
+            base_edge_2::{BaseEdge2, BaseEdge2Type},
+            base_vertex_2::BaseVertex2,
+        },
+        base_kernel::base_segment_2::BaseSegment2,
+    },
     number_type::base_number_type_trait::BaseNumberTypeTrait,
 };
 
-use super::{face_2::Face2, vertex_2::Vertex2};
+use super::{arc_2::Arc2, face_2::Face2, segment_2::Segment2, vertex_2::Vertex2};
 
 #[derive(Debug, Clone)]
 pub struct Edge2<'a, NT: BaseNumberTypeTrait> {
@@ -17,6 +23,8 @@ pub struct Edge2<'a, NT: BaseNumberTypeTrait> {
 }
 
 impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
+    type Segment = Segment2<NT>;
+    type Arc = Arc2<NT>;
     type Vertex = Vertex2<'a, NT>;
     type Face = Face2<'a, NT>;
 
@@ -106,6 +114,14 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
 
     fn edge_type(&self) -> BaseEdge2Type {
         self.edge_type
+    }
+
+    fn to_segment(&self) -> Self::Segment {
+        Segment2::new(self.source.to_point(), self.target.to_point())
+    }
+
+    fn to_arc(&self) -> Self::Arc {
+        todo!()
     }
 }
 

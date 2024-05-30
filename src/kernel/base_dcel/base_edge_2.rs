@@ -1,6 +1,9 @@
 use std::fmt::Debug;
 
-use crate::number_type::base_number_type_trait::BaseNumberTypeTrait;
+use crate::{
+    kernel::base_kernel::{base_arc_2::BaseArc2, base_segment_2::BaseSegment2},
+    number_type::base_number_type_trait::BaseNumberTypeTrait,
+};
 
 use super::{base_face_2::BaseFace2, base_vertex_2::BaseVertex2};
 
@@ -11,6 +14,8 @@ pub enum BaseEdge2Type {
 }
 
 pub trait BaseEdge2<'a, NT: BaseNumberTypeTrait>: Clone + Sized + Debug + PartialEq {
+    type Segment: BaseSegment2<NT>;
+    type Arc: BaseArc2<NT>;
     type Vertex: BaseVertex2<'a, NT>;
     type Face: BaseFace2<'a, NT>;
 
@@ -29,4 +34,6 @@ pub trait BaseEdge2<'a, NT: BaseNumberTypeTrait>: Clone + Sized + Debug + Partia
     fn face(&self) -> Option<&Self::Face>;
     fn set_face(&mut self, face: &'a Self::Face);
     fn edge_type(&self) -> BaseEdge2Type;
+    fn to_segment(&self) -> Self::Segment;
+    fn to_arc(&self) -> Self::Arc;
 }
