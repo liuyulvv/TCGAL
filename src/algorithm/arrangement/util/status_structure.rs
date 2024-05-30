@@ -58,7 +58,7 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> StatusStructure<'a, NT, 
                 if is_empty {
                     None
                 } else {
-                    let left = self.edge_vec.get(self.edge_vec.len().wrapping_sub(1));
+                    let left = self.edge_vec.get(self.edge_vec.len().wrapping_sub(2));
                     Some(Neighbors {
                         left: Some(left.unwrap()),
                         right: None,
