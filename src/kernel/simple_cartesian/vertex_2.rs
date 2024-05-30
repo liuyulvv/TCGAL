@@ -59,14 +59,14 @@ impl<'a, NT: BaseNumberTypeTrait> PartialEq for Vertex2<'a, NT> {
 impl<'a, NT: BaseNumberTypeTrait> PartialOrd for Vertex2<'a, NT> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         if self.y() > other.y() {
-            return Some(std::cmp::Ordering::Less);
-        } else if self.y() < other.y() {
             return Some(std::cmp::Ordering::Greater);
+        } else if self.y() < other.y() {
+            return Some(std::cmp::Ordering::Less);
         } else {
             if self.x() > other.x() {
-                return Some(std::cmp::Ordering::Less);
-            } else if self.x() < other.x() {
                 return Some(std::cmp::Ordering::Greater);
+            } else if self.x() < other.x() {
+                return Some(std::cmp::Ordering::Less);
             } else {
                 return Some(std::cmp::Ordering::Equal);
             }

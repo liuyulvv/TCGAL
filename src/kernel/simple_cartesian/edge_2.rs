@@ -21,7 +21,7 @@ impl<'a, NT: BaseNumberTypeTrait> BaseEdge2<'a, NT> for Edge2<'a, NT> {
     type Face = Face2<'a, NT>;
 
     fn new_segment(source: &'a Self::Vertex, target: &'a Self::Vertex) -> Self {
-        if source < target {
+        if source > target {
             Self {
                 source,
                 target,
