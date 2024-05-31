@@ -20,6 +20,7 @@ pub trait BaseNumberTypeTrait:
     + Copy
     + Debug
 {
+    fn equals(self, other: Self) -> bool;
     fn sqrt(self) -> Self;
     fn abs(self) -> Self;
 }
@@ -52,6 +53,11 @@ impl BaseNumberTypeTrait for f32 {
     fn abs(self) -> Self {
         self.abs()
     }
+
+    fn equals(self, other: Self) -> bool {
+        let abs_diff = (self - other).abs();
+        abs_diff < Self::default_eps()
+    }
 }
 
 impl BaseNumberTypeTrait for f64 {
@@ -61,5 +67,10 @@ impl BaseNumberTypeTrait for f64 {
 
     fn abs(self) -> Self {
         self.abs()
+    }
+
+    fn equals(self, other: Self) -> bool {
+        let abs_diff = (self - other).abs();
+        abs_diff < Self::default_eps()
     }
 }
