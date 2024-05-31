@@ -51,7 +51,7 @@ impl<NT: NumberType> Vertex2<NT> {
 
 impl<'a, NT: NumberType> PartialEq for Vertex2<NT> {
     fn eq(&self, other: &Self) -> bool {
-        std::ptr::eq(self, other)
+        self.equals(other)
     }
 }
 

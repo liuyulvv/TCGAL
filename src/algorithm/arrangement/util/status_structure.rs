@@ -1,22 +1,20 @@
-use std::marker::PhantomData;
+use std::{cell::RefCell, marker::PhantomData, rc::Rc};
 
-use crate::{
-    kernel::base_dcel::base_edge_2::BaseEdge2,
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
-};
+use crate::kernel::{edge_2::Edge2, number_type::NumberType, vertex_2::Vertex2};
 
-pub struct Neighbors<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> {
-    pub left: Option<&'a T>,
-    pub right: Option<&'a T>,
+pub struct Neighbors<NT: NumberType> {
+    pub left: Option<Rc<RefCell<Edge2<NT>>>>,
+    pub right: Option<Rc<RefCell<Edge2<NT>>>>,
     phantom: PhantomData<NT>,
 }
 
-pub struct StatusStructure<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> {
-    vertex_vec: Vec<&'a T::Vertex>,
-    edge_vec: Vec<&'a T>,
+#[derive(Debug, Clone)]
+pub struct StatusStructure<NT: NumberType> {
+    vertex_vec: Vec<Rc<RefCell<Vertex2<NT>>>>,
+    edge_vec: Vec<Rc<RefCell<Edge2<NT>>>>,
 }
 
-impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> StatusStructure<'a, NT, T> {
+impl<NT: NumberType> StatusStructure<NT> {
     pub fn new() -> Self {
         Self {
             vertex_vec: Vec::new(),
@@ -24,28 +22,29 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> StatusStructure<'a, NT, 
         }
     }
 
-    pub fn insert(&mut self, edge: &'a T) -> Option<Neighbors<'a, NT, T>> {
-        let insert_index = self.insert_index(edge);
+    pub fn insert(&mut self, edge: Rc<RefCell<Edge2<NT>>>) -> Option<Neighbors<NT>> {
+        let insert_index = self.insert_index(edge.clone());
+        let edge_binding = edge.borrow();
         match insert_index {
             Some(index) => {
-                self.vertex_vec.insert(index, edge.source());
-                self.edge_vec.insert(index, edge);
+                self.vertex_vec.insert(index, edge_binding.source());
+                self.edge_vec.insert(index, edge.clone());
                 let left = self.edge_vec.get(index.wrapping_sub(1));
                 let right = self.edge_vec.get(index.wrapping_add(1));
                 match (left, right) {
                     (Some(left), Some(right)) => Some(Neighbors {
-                        left: Some(left),
-                        right: Some(right),
+                        left: Some(left.clone()),
+                        right: Some(right.clone()),
                         phantom: PhantomData,
                     }),
                     (Some(left), None) => Some(Neighbors {
-                        left: Some(left),
+                        left: Some(left.clone()),
                         right: None,
                         phantom: PhantomData,
                     }),
-                    (None, Some(right)) => Some(Neighbors::<NT, T> {
+                    (None, Some(right)) => Some(Neighbors::<NT> {
                         left: None,
-                        right: Some(right),
+                        right: Some(right.clone()),
                         phantom: PhantomData,
                     }),
                     (None, None) => None,
@@ -53,24 +52,40 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> StatusStructure<'a, NT, 
             }
             None => {
                 let is_empty = self.vertex_vec.is_empty();
-                self.vertex_vec.push(edge.source());
-                self.edge_vec.push(edge);
+                self.vertex_vec.push(edge_binding.source());
+                self.edge_vec.push(edge.clone());
                 if is_empty {
                     None
                 } else {
-                    let left = self.edge_vec.get(self.edge_vec.len().wrapping_sub(2));
+                    let left = self.edge_vec.get(self.edge_vec.len() - 2);
                     Some(Neighbors {
-                        left: Some(left.unwrap()),
+                        left: Some(left.unwrap().clone()),
                         right: None,
                         phantom: PhantomData,
                     })
                 }
+                // self.vertex_vec.insert(0, edge_binding.source());
+                // self.edge_vec.insert(0, edge.clone());
+                // if is_empty {
+                //     None
+                // } else {
+                //     let right = self.edge_vec.get(1);
+                //     Some(Neighbors {
+                //         left: None,
+                //         right: Some(right.unwrap().clone()),
+                //         phantom: PhantomData,
+                //     })
+                // }
             }
         }
     }
 
-    pub fn remove(&mut self, edge: &'a T) -> Option<Neighbors<'a, NT, T>> {
-        let remove_index = self.edge_vec.iter().position(|&e| e == edge);
+    pub fn remove(&mut self, edge: Rc<RefCell<Edge2<NT>>>) -> Option<Neighbors<NT>> {
+        let remove_index = self.edge_vec.iter().position(|e| {
+            let e_binding = e.borrow();
+            let edge_binding: std::cell::Ref<Edge2<NT>> = edge.borrow();
+            *e_binding == *edge_binding
+        });
         match remove_index {
             Some(index) => {
                 self.vertex_vec.remove(index);
@@ -79,18 +94,18 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> StatusStructure<'a, NT, 
                 let right = self.edge_vec.get(index);
                 match (left, right) {
                     (Some(left), Some(right)) => Some(Neighbors {
-                        left: Some(left),
-                        right: Some(right),
+                        left: Some(left.clone()),
+                        right: Some(right.clone()),
                         phantom: PhantomData,
                     }),
                     (Some(left), None) => Some(Neighbors {
-                        left: Some(left),
+                        left: Some(left.clone()),
                         right: None,
                         phantom: PhantomData,
                     }),
-                    (None, Some(right)) => Some(Neighbors::<NT, T> {
+                    (None, Some(right)) => Some(Neighbors::<NT> {
                         left: None,
-                        right: Some(right),
+                        right: Some(right.clone()),
                         phantom: PhantomData,
                     }),
                     (None, None) => None,
@@ -104,16 +119,13 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> StatusStructure<'a, NT, 
         self.vertex_vec.is_empty() && self.edge_vec.is_empty()
     }
 
-    pub fn insert_index(&self, edge: &'a T) -> Option<usize> {
-        let source = edge.source();
-        self.vertex_vec.iter().position(|&e| e <= source)
-    }
-
-    pub fn vertex_iter(&self) -> impl Iterator<Item = &&'a T::Vertex> {
-        self.vertex_vec.iter()
-    }
-
-    pub fn edge_iter(&self) -> impl Iterator<Item = &&'a T> {
-        self.edge_vec.iter()
+    pub fn insert_index(&self, edge: Rc<RefCell<Edge2<NT>>>) -> Option<usize> {
+        let edge_binding = edge.borrow();
+        let source = edge_binding.source();
+        self.vertex_vec.iter().position(|e| {
+            let e_binding = e.borrow();
+            let source_binding = source.borrow();
+            e_binding.x() >= source_binding.x()
+        })
     }
 }

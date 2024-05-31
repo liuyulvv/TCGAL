@@ -1,69 +1,73 @@
+use std::{cell::RefCell, rc::Rc};
+
 use crate::{
     algorithm::{
-        arrangement::util::{
-            event_queue::EventQueue, event_vertex_2::EventVertex2Type,
-            status_structure::StatusStructure,
-        },
+        arrangement::util::event_vertex_2::EventVertex2Type,
         intersection::edge_2_edge_2::edge_2_edge_2_intersection,
     },
-    kernel::base_dcel::{base_arrangement_2::BaseArrangement2, base_edge_2::BaseEdge2},
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
+    kernel::{edge_2::Edge2, face_2::Face2, number_type::NumberType, vertex_2::Vertex2},
+};
+
+use super::util::{
+    event_queue::EventQueue, event_vertex_2::EventVertex2, status_structure::StatusStructure,
 };
 
 #[derive(Debug, Clone)]
-pub struct Arrangement2<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> {
-    vertices: Vec<T::Vertex>,
-    edges: Vec<T>,
-    faces: Vec<T::Face>,
+pub struct Arrangement2<NT: NumberType> {
+    vertices: Vec<Rc<RefCell<Vertex2<NT>>>>,
+    edges: Vec<Rc<RefCell<Edge2<NT>>>>,
+    faces: Vec<Rc<RefCell<Face2<NT>>>>,
+    event_queue: EventQueue<NT>,
+    status_structure: StatusStructure<NT>,
 }
 
-impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> BaseArrangement2<'a, NT>
-    for Arrangement2<'a, NT, T>
-{
-    type Vertex = T::Vertex;
-    type Edge = T;
-    type Face = T::Face;
-
-    fn new(edges: Vec<T>) -> Self {
+impl<NT: NumberType> Arrangement2<NT> {
+    pub fn new(edges: Vec<Edge2<NT>>) -> Self {
         Self {
             vertices: Vec::new(),
-            edges,
+            edges: edges
+                .iter()
+                .map(|e| Rc::new(RefCell::new(e.clone())))
+                .collect(),
             faces: Vec::new(),
+            event_queue: EventQueue::new(),
+            status_structure: StatusStructure::new(),
         }
     }
 
-    fn make_arrangement(&'a mut self) {
-        let mut event_queue = EventQueue::new();
-        let mut status_structure = StatusStructure::new();
+    pub fn make_arrangement(&mut self) {
+        self.event_queue = EventQueue::new();
+        self.status_structure = StatusStructure::new();
 
         for edge in self.edges.iter() {
-            event_queue.insert_edge(edge);
+            self.event_queue.insert_edge(edge);
         }
 
-        while !event_queue.is_empty() {
-            let vertex = event_queue.pop();
+        while !self.event_queue.is_empty() {
+            let vertex = self.event_queue.pop();
             match vertex {
                 Some(v) => {
                     let vertex_type = v.vertex_type();
                     match vertex_type {
                         EventVertex2Type::Start => {
+                            println!(
+                                "Start: {:?} {:?}",
+                                v.vertex().borrow().x(),
+                                v.vertex().borrow().y()
+                            );
                             v.edges().iter().for_each(|e| {
-                                let neighbors = status_structure.insert(*e);
+                                let neighbors = self.status_structure.insert(e.clone());
                                 match neighbors {
                                     Some(neighbors) => {
                                         match neighbors.left {
                                             Some(left) => {
-                                                let intersection =
-                                                    edge_2_edge_2_intersection(left, e);
-                                                intersection.iter().for_each(|point| {
-                                                    println!("Intersection: {:#?}", point);
-                                                });
+                                                self.process_neighbor(&v, e.clone(), left)
                                             }
                                             None => {}
                                         }
                                         match neighbors.right {
                                             Some(right) => {
-                                                println!("right: {:#?}", right);
+                                                self.process_neighbor(&v, e.clone(), right)
                                             }
                                             None => {}
                                         }
@@ -73,12 +77,21 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> BaseArrangement2<'a, NT>
                             });
                         }
                         EventVertex2Type::End => {
+                            println!(
+                                "End: {:?} {:?}",
+                                v.vertex().borrow().x(),
+                                v.vertex().borrow().y()
+                            );
                             v.edges().iter().for_each(|e| {
-                                status_structure.remove(*e);
+                                self.status_structure.remove(e.clone());
                             });
                         }
                         EventVertex2Type::Intersection => {
-                            println!("Intersection");
+                            println!(
+                                "Intersection: {:?} {:?}",
+                                v.vertex().borrow().x(),
+                                v.vertex().borrow().y()
+                            );
                         }
                     }
                 }
@@ -89,16 +102,34 @@ impl<'a, NT: BaseNumberTypeTrait, T: BaseEdge2<'a, NT>> BaseArrangement2<'a, NT>
         }
     }
 
-    fn vertices(&self) -> Vec<&Self::Vertex> {
-        self.vertices.iter().collect()
+    fn process_neighbor(
+        &mut self,
+        event_vertex: &EventVertex2<NT>,
+        edge: Rc<RefCell<Edge2<NT>>>,
+        neighbor: Rc<RefCell<Edge2<NT>>>,
+    ) {
+        todo!()
+        // let intersection = edge_2_edge_2_intersection(&neighbor.borrow(), &edge.borrow());
+        // intersection.iter().for_each(|point| {
+        //     let vertex_binding = event_vertex.vertex();
+        //     let vertex = vertex_binding.borrow();
+        //     if point.y() < vertex.y() || (point.y().equals(vertex.y()) && point.x() >= vertex.x()) {
+        //         self.event_queue
+        //             .insert_intersection(Rc::new(RefCell::new(Vertex2::new(point.x(), point.y()))));
+        //     }
+        // });
     }
 
-    fn edges(&self) -> Vec<&Self::Edge> {
-        self.edges.iter().collect()
+    pub fn vertices(&self) -> Vec<Rc<RefCell<Vertex2<NT>>>> {
+        self.vertices.clone()
     }
 
-    fn faces(&self) -> Vec<&Self::Face> {
-        self.faces.iter().collect()
+    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<NT>>>> {
+        self.edges.clone()
+    }
+
+    pub fn faces(&self) -> Vec<Rc<RefCell<Face2<NT>>>> {
+        self.faces.clone()
     }
 }
 
@@ -107,23 +138,38 @@ mod tests {
 
     use super::*;
 
-    use crate::kernel::{
-        base_dcel::{base_edge_2::BaseEdge2, base_vertex_2::BaseVertex2},
-        simple_cartesian::{edge_2::Edge2, vertex_2::Vertex2},
-    };
-
     #[test]
     fn test_arrangement_2() {
         let mut edges = Vec::new();
 
-        let source = Vertex2::new(10.0, 0.0);
+        // let source = Vertex2::new(10.0, 10.0);
+        // let target = Vertex2::new(0.0, 0.0);
+        // let edge = Edge2::new_segment(Rc::new(RefCell::new(source)), Rc::new(RefCell::new(target)));
+        // edges.push(edge);
+
+        // let source = Vertex2::new(0.0, 10.0);
+        // let target = Vertex2::new(10.0, 0.0);
+        // let edge = Edge2::new_segment(Rc::new(RefCell::new(source)), Rc::new(RefCell::new(target)));
+        // edges.push(edge);
+
+        // let source = Vertex2::new(5.0, 0.0);
+        // let target = Vertex2::new(8.0, 8.0);
+        // let edge = Edge2::new_segment(Rc::new(RefCell::new(source)), Rc::new(RefCell::new(target)));
+        // edges.push(edge);
+
+        let source = Vertex2::new(10.0, 10.0);
         let target = Vertex2::new(0.0, 10.0);
-        let edge = Edge2::new_segment(&source, &target);
+        let edge = Edge2::new_segment(Rc::new(RefCell::new(source)), Rc::new(RefCell::new(target)));
         edges.push(edge);
 
-        let source = Vertex2::new(0.0, 0.0);
-        let target = Vertex2::new(10.0, 10.0);
-        let edge = Edge2::new_segment(&source, &target);
+        let source = Vertex2::new(0.0, 5.0);
+        let target = Vertex2::new(5.0, 10.0);
+        let edge = Edge2::new_segment(Rc::new(RefCell::new(source)), Rc::new(RefCell::new(target)));
+        edges.push(edge);
+
+        let source = Vertex2::new(3.0, 0.0);
+        let target = Vertex2::new(3.0, 15.0);
+        let edge = Edge2::new_segment(Rc::new(RefCell::new(source)), Rc::new(RefCell::new(target)));
         edges.push(edge);
 
         let mut arrangement = Arrangement2::new(edges);

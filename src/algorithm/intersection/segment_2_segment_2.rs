@@ -1,17 +1,12 @@
 use crate::{
     algorithm::location::point_2_segment_2::is_point_2_on_segment_2,
-    kernel::base_kernel::{
-        base_point_2::BasePoint2, base_segment_2::BaseSegment2, base_vector_2::BaseVector2,
-    },
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
+    kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2},
 };
 
-pub fn is_segment_2_segment_2_intersected<NT, T>(s1: &T, s2: &T) -> bool
-where
-    NT: BaseNumberTypeTrait,
-    T: BaseSegment2<NT>,
-    T::Point2: BasePoint2<NT>,
-{
+pub fn is_segment_2_segment_2_intersected<NT: NumberType>(
+    s1: &Segment2<NT>,
+    s2: &Segment2<NT>,
+) -> bool {
     let ab = s1.target() - s1.source();
     let ac = s2.source() - s1.source();
     let ad = s2.target() - s1.source();
@@ -22,12 +17,10 @@ where
     ab.cross(&ac) * ab.cross(&ad) < eps && cd.cross(&ca) * cd.cross(&cb) < eps
 }
 
-pub fn segment_2_segment_2_intersection<NT, T>(s1: &T, s2: &T) -> Vec<T::Point2>
-where
-    NT: BaseNumberTypeTrait,
-    T: BaseSegment2<NT>,
-    T::Point2: BasePoint2<NT>,
-{
+pub fn segment_2_segment_2_intersection<NT: NumberType>(
+    s1: &Segment2<NT>,
+    s2: &Segment2<NT>,
+) -> Vec<Point2<NT>> {
     let mut result = Vec::new();
     if is_segment_2_segment_2_intersected(s1, s2) {
         if is_point_2_on_segment_2(&s1.source(), s2) {
@@ -48,7 +41,7 @@ where
             let cd = s2.target() - s2.source();
             let t = ac.cross(&cd) / ab.cross(&cd);
             let res = s1.source().get_vector() + ab * t;
-            let point = T::Point2::new(res.x(), res.y());
+            let point = Point2::new(res.x(), res.y());
             result.push(point);
             return result;
         } else {
@@ -62,8 +55,6 @@ where
 
 #[cfg(test)]
 mod tests {
-
-    use crate::kernel::simple_cartesian::{point_2::Point2, segment_2::Segment2};
 
     use super::*;
 

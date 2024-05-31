@@ -1,7 +1,4 @@
-use crate::{
-    kernel::base_kernel::{base_circle_2::BaseCircle2, base_vector_2::BaseVector2},
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
-};
+use crate::kernel::{circle_2::Circle2, number_type::NumberType, point_2::Point2};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
 pub enum Point2Circle2Location {
@@ -10,11 +7,10 @@ pub enum Point2Circle2Location {
     Outside,
 }
 
-pub fn is_point_2_on_circle_2<NT, T>(point_2: &T::Point2, circle_2: &T) -> bool
-where
-    NT: BaseNumberTypeTrait,
-    T: BaseCircle2<NT>,
-{
+pub fn is_point_2_on_circle_2<NT: NumberType>(
+    point_2: &Point2<NT>,
+    circle_2: &Circle2<NT>,
+) -> bool {
     let center = circle_2.center();
     let radius = circle_2.radius();
     let vec_center_point = *point_2 - center;
@@ -23,11 +19,10 @@ where
     (distance - radius).abs() < eps
 }
 
-pub fn locate_point_2_circle_2<NT, T>(point_2: &T::Point2, circle_2: &T) -> Point2Circle2Location
-where
-    NT: BaseNumberTypeTrait,
-    T: BaseCircle2<NT>,
-{
+pub fn locate_point_2_circle_2<NT: NumberType>(
+    point_2: &Point2<NT>,
+    circle_2: &Circle2<NT>,
+) -> Point2Circle2Location {
     let center = circle_2.center();
     let radius = circle_2.radius();
     let vec_center_point = *point_2 - center;
@@ -44,11 +39,6 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::kernel::{
-        base_kernel::base_point_2::BasePoint2,
-        simple_cartesian::{circle_2::Circle2, point_2::Point2},
-    };
-
     use super::*;
 
     #[test]

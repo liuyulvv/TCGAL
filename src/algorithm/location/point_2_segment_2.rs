@@ -1,9 +1,4 @@
-use crate::{
-    kernel::base_kernel::{
-        base_point_2::BasePoint2, base_segment_2::BaseSegment2, base_vector_2::BaseVector2,
-    },
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
-};
+use crate::kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
 pub enum Point2Segment2Location {
@@ -13,12 +8,10 @@ pub enum Point2Segment2Location {
     Collinear,
 }
 
-pub fn is_point_2_on_segment_2<NT, T>(point_2: &T::Point2, segment_2: &T) -> bool
-where
-    NT: BaseNumberTypeTrait,
-    T: BaseSegment2<NT>,
-    T::Point2: BasePoint2<NT>,
-{
+pub fn is_point_2_on_segment_2<NT: NumberType>(
+    point_2: &Point2<NT>,
+    segment_2: &Segment2<NT>,
+) -> bool {
     let source = segment_2.source();
     let target = segment_2.target();
     let vec_ab = target - source;
@@ -33,12 +26,10 @@ where
         && dot_ab_ac <= dot_ab_ab
 }
 
-pub fn locate_point_2_segment_2<NT, T>(point_2: &T::Point2, segment_2: &T) -> Point2Segment2Location
-where
-    NT: BaseNumberTypeTrait,
-    T: BaseSegment2<NT>,
-    T::Point2: BasePoint2<NT>,
-{
+pub fn locate_point_2_segment_2<NT: NumberType>(
+    point_2: &Point2<NT>,
+    segment_2: &Segment2<NT>,
+) -> Point2Segment2Location {
     let source = segment_2.source();
     let target = segment_2.target();
     let vec_ab = target - source;
@@ -61,8 +52,6 @@ where
 
 #[cfg(test)]
 mod tests {
-
-    use crate::kernel::simple_cartesian::{point_2::Point2, segment_2::Segment2};
 
     use super::*;
 

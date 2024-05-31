@@ -1,7 +1,6 @@
-use crate::{
-    kernel::base_dcel::{base_edge_2::BaseEdge2, base_vertex_2::BaseVertex2},
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
-};
+use std::{cell::RefCell, rc::Rc};
+
+use crate::kernel::{edge_2::Edge2, number_type::NumberType, vertex_2::Vertex2};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EventVertex2Type {
@@ -10,23 +9,15 @@ pub enum EventVertex2Type {
     Intersection,
 }
 
-#[derive(Debug)]
-pub struct EventVertex2<'a, NT: BaseNumberTypeTrait, T>
-where
-    T: BaseEdge2<'a, NT>,
-    T::Vertex: BaseVertex2<'a, NT>,
-{
-    vertex: &'a T::Vertex,
+#[derive(Debug, Clone)]
+pub struct EventVertex2<NT: NumberType> {
+    vertex: Rc<RefCell<Vertex2<NT>>>,
     vertex_type: EventVertex2Type,
-    edges: Vec<&'a T>,
+    edges: Vec<Rc<RefCell<Edge2<NT>>>>,
 }
 
-impl<'a, NT: BaseNumberTypeTrait, T> EventVertex2<'a, NT, T>
-where
-    T: BaseEdge2<'a, NT>,
-    T::Vertex: BaseVertex2<'a, NT>,
-{
-    pub fn new(vertex: &'a T::Vertex, vertex_type: EventVertex2Type) -> Self {
+impl<NT: NumberType> EventVertex2<NT> {
+    pub fn new(vertex: Rc<RefCell<Vertex2<NT>>>, vertex_type: EventVertex2Type) -> Self {
         Self {
             vertex,
             vertex_type,
@@ -34,57 +25,48 @@ where
         }
     }
 
-    pub fn add_edge(&mut self, edge: &'a T) {
+    pub fn add_edge(&mut self, edge: Rc<RefCell<Edge2<NT>>>) {
         self.edges.push(edge);
     }
 
-    pub fn vertex(&self) -> &'a T::Vertex {
-        self.vertex
+    pub fn vertex(&self) -> Rc<RefCell<Vertex2<NT>>> {
+        self.vertex.clone()
     }
 
     pub fn vertex_type(&self) -> EventVertex2Type {
         self.vertex_type.clone()
     }
 
-    pub fn edges(&self) -> &Vec<&'a T> {
-        &self.edges
+    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<NT>>>> {
+        self.edges.clone()
     }
 }
 
-impl<'a, NT: BaseNumberTypeTrait, T> PartialEq for EventVertex2<'a, NT, T>
-where
-    T: BaseEdge2<'a, NT>,
-    T::Vertex: BaseVertex2<'a, NT>,
-{
+impl<NT: NumberType> PartialEq for EventVertex2<NT> {
     fn eq(&self, other: &Self) -> bool {
-        self.vertex.equals(other.vertex)
+        let self_vertex = self.vertex.borrow();
+        let other_vertex = other.vertex.borrow();
+        self_vertex.equals(&other_vertex)
     }
 }
 
-impl<'a, Nt: BaseNumberTypeTrait, T> Eq for EventVertex2<'a, Nt, T>
-where
-    T: BaseEdge2<'a, Nt>,
-    T::Vertex: BaseVertex2<'a, Nt>,
-{
-}
+impl<Nt: NumberType> Eq for EventVertex2<Nt> {}
 
-impl<'a, NT: BaseNumberTypeTrait, T> Ord for EventVertex2<'a, NT, T>
-where
-    T: BaseEdge2<'a, NT>,
-    T::Vertex: BaseVertex2<'a, NT>,
-{
+impl<NT: NumberType> Ord for EventVertex2<NT> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        if self.vertex.equals(other.vertex) {
+        let self_vertex = self.vertex.borrow();
+        let other_vertex = other.vertex.borrow();
+        if self_vertex.equals(&other_vertex) {
             return std::cmp::Ordering::Equal;
         }
-        if self.vertex.y() > other.vertex.y() {
+        if self_vertex.y() > other_vertex.y() {
             std::cmp::Ordering::Greater
-        } else if self.vertex.y() < other.vertex.y() {
+        } else if self_vertex.y() < other_vertex.y() {
             std::cmp::Ordering::Less
         } else {
-            if self.vertex.x() > other.vertex.x() {
+            if self_vertex.x() > other_vertex.x() {
                 std::cmp::Ordering::Greater
-            } else if self.vertex.x() < other.vertex.x() {
+            } else if self_vertex.x() < other_vertex.x() {
                 std::cmp::Ordering::Less
             } else {
                 std::cmp::Ordering::Equal
@@ -93,23 +75,21 @@ where
     }
 }
 
-impl<'a, NT: BaseNumberTypeTrait, T> PartialOrd for EventVertex2<'a, NT, T>
-where
-    T: BaseEdge2<'a, NT>,
-    T::Vertex: BaseVertex2<'a, NT>,
-{
+impl<NT: NumberType> PartialOrd for EventVertex2<NT> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        if self.vertex.equals(other.vertex) {
+        let self_vertex = self.vertex.borrow();
+        let other_vertex = other.vertex.borrow();
+        if self_vertex.equals(&other_vertex) {
             return Some(std::cmp::Ordering::Equal);
         }
-        if self.vertex.y() > other.vertex.y() {
+        if self_vertex.y() > other_vertex.y() {
             Some(std::cmp::Ordering::Greater)
-        } else if self.vertex.y() < other.vertex.y() {
+        } else if self_vertex.y() < other_vertex.y() {
             Some(std::cmp::Ordering::Less)
         } else {
-            if self.vertex.x() > other.vertex.x() {
+            if self_vertex.x() > other_vertex.x() {
                 Some(std::cmp::Ordering::Greater)
-            } else if self.vertex.x() < other.vertex.x() {
+            } else if self_vertex.x() < other_vertex.x() {
                 Some(std::cmp::Ordering::Less)
             } else {
                 Some(std::cmp::Ordering::Equal)
