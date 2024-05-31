@@ -8,7 +8,7 @@ pub trait DefaultNumberValueTrait {
     fn default_eps() -> Self;
 }
 
-pub trait BaseNumberTypeTrait:
+pub trait NumberType:
     DefaultNumberValueTrait
     + Add<Output = Self>
     + Sub<Output = Self>
@@ -45,7 +45,7 @@ impl DefaultNumberValueTrait for f64 {
     }
 }
 
-impl BaseNumberTypeTrait for f32 {
+impl NumberType for f32 {
     fn sqrt(self) -> Self {
         self.sqrt()
     }
@@ -60,7 +60,7 @@ impl BaseNumberTypeTrait for f32 {
     }
 }
 
-impl BaseNumberTypeTrait for f64 {
+impl NumberType for f64 {
     fn sqrt(self) -> Self {
         self.sqrt()
     }

@@ -1,34 +1,31 @@
 use std::ops::{Add, Div, Mul, Sub};
 
-use crate::{
-    kernel::base_kernel::base_vector_2::BaseVector2,
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
-};
+use super::number_type::NumberType;
 
 #[derive(Debug, Clone, Copy)]
-pub struct Vector2<NT: BaseNumberTypeTrait> {
+pub struct Vector2<NT: NumberType> {
     x: NT,
     y: NT,
 }
 
-impl<NT: BaseNumberTypeTrait> BaseVector2<NT> for Vector2<NT> {
-    fn new(x: NT, y: NT) -> Self {
+impl<NT: NumberType> Vector2<NT> {
+    pub fn new(x: NT, y: NT) -> Self {
         Self { x, y }
     }
 
-    fn x(&self) -> NT {
+    pub fn x(&self) -> NT {
         self.x
     }
 
-    fn y(&self) -> NT {
+    pub fn y(&self) -> NT {
         self.y
     }
 
-    fn length(&self) -> NT {
+    pub fn length(&self) -> NT {
         (self.x * self.x + self.y * self.y).sqrt()
     }
 
-    fn normalize(&self) -> Self {
+    pub fn normalize(&self) -> Self {
         let length = self.length();
         let eps = NT::default_eps();
         if length < eps {
@@ -40,16 +37,16 @@ impl<NT: BaseNumberTypeTrait> BaseVector2<NT> for Vector2<NT> {
         }
     }
 
-    fn dot(&self, other: &Self) -> NT {
+    pub fn dot(&self, other: &Self) -> NT {
         self.x * other.x + self.y * other.y
     }
 
-    fn cross(&self, other: &Self) -> NT {
+    pub fn cross(&self, other: &Self) -> NT {
         self.x * other.y - self.y * other.x
     }
 }
 
-impl<NT: BaseNumberTypeTrait> Add for Vector2<NT> {
+impl<NT: NumberType> Add for Vector2<NT> {
     type Output = Self;
 
     fn add(self, other: Self) -> Self::Output {
@@ -57,7 +54,7 @@ impl<NT: BaseNumberTypeTrait> Add for Vector2<NT> {
     }
 }
 
-impl<NT: BaseNumberTypeTrait> Sub for Vector2<NT> {
+impl<NT: NumberType> Sub for Vector2<NT> {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self::Output {
@@ -65,7 +62,7 @@ impl<NT: BaseNumberTypeTrait> Sub for Vector2<NT> {
     }
 }
 
-impl<NT: BaseNumberTypeTrait> Mul<NT> for Vector2<NT> {
+impl<NT: NumberType> Mul<NT> for Vector2<NT> {
     type Output = Self;
 
     fn mul(self, rhs: NT) -> Self::Output {
@@ -73,7 +70,7 @@ impl<NT: BaseNumberTypeTrait> Mul<NT> for Vector2<NT> {
     }
 }
 
-impl<NT: BaseNumberTypeTrait> Div<NT> for Vector2<NT> {
+impl<NT: NumberType> Div<NT> for Vector2<NT> {
     type Output = Self;
 
     fn div(self, rhs: NT) -> Self::Output {
@@ -81,7 +78,7 @@ impl<NT: BaseNumberTypeTrait> Div<NT> for Vector2<NT> {
     }
 }
 
-impl<NT: BaseNumberTypeTrait> PartialEq for Vector2<NT> {
+impl<NT: NumberType> PartialEq for Vector2<NT> {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y
     }

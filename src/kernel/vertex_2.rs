@@ -1,22 +1,16 @@
-use crate::{
-    kernel::{base_dcel::base_vertex_2::BaseVertex2, base_kernel::base_point_2::BasePoint2},
-    number_type::base_number_type_trait::BaseNumberTypeTrait,
-};
+use std::{cell::RefCell, rc::Rc};
 
-use super::{edge_2::Edge2, point_2::Point2};
+use super::{edge_2::Edge2, number_type::NumberType, point_2::Point2};
 
 #[derive(Debug, Clone)]
-pub struct Vertex2<'a, NT: BaseNumberTypeTrait> {
+pub struct Vertex2<NT: NumberType> {
     x: NT,
     y: NT,
-    edges: Vec<&'a Edge2<'a, NT>>,
+    edges: Vec<Rc<RefCell<Edge2<NT>>>>,
 }
 
-impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
-    type Point = Point2<NT>;
-    type Edge = Edge2<'a, NT>;
-
-    fn new(x: NT, y: NT) -> Self {
+impl<NT: NumberType> Vertex2<NT> {
+    pub fn new(x: NT, y: NT) -> Self {
         Self {
             x,
             y,
@@ -24,44 +18,44 @@ impl<'a, NT: BaseNumberTypeTrait> BaseVertex2<'a, NT> for Vertex2<'a, NT> {
         }
     }
 
-    fn x(&self) -> NT {
+    pub fn x(&self) -> NT {
         self.x
     }
 
-    fn y(&self) -> NT {
+    pub fn y(&self) -> NT {
         self.y
     }
 
-    fn edges(&self) -> &Vec<&Self::Edge> {
-        &self.edges
+    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<NT>>>> {
+        self.edges.clone()
     }
 
-    fn add_edge(&mut self, edge: &'a Self::Edge) {
+    pub fn add_edge(&mut self, edge: Rc<RefCell<Edge2<NT>>>) {
         self.edges.push(edge);
     }
 
-    fn remove_edge(&mut self, edge: &'a Self::Edge) {
+    pub fn remove_edge(&mut self, edge: Rc<RefCell<Edge2<NT>>>) {
         self.edges.retain(|e| e != &edge);
     }
 
-    fn equals(&self, other: &Self) -> bool {
+    pub fn equals(&self, other: &Self) -> bool {
         let eps = NT::default_eps();
         ((self.x - other.x) * (self.x - other.x) + (self.y - other.y) * (self.y - other.y)).sqrt()
             < eps
     }
 
-    fn to_point(&self) -> Self::Point {
+    pub fn to_point(&self) -> Point2<NT> {
         Point2::new(self.x, self.y)
     }
 }
 
-impl<'a, NT: BaseNumberTypeTrait> PartialEq for Vertex2<'a, NT> {
+impl<'a, NT: NumberType> PartialEq for Vertex2<NT> {
     fn eq(&self, other: &Self) -> bool {
         std::ptr::eq(self, other)
     }
 }
 
-impl<'a, NT: BaseNumberTypeTrait> PartialOrd for Vertex2<'a, NT> {
+impl<'a, NT: NumberType> PartialOrd for Vertex2<NT> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         if self.y() > other.y() {
             return Some(std::cmp::Ordering::Greater);
