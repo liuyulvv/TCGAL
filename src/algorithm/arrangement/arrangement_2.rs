@@ -55,25 +55,18 @@ impl<NT: NumberType> Arrangement2<NT> {
                                 v.vertex().borrow().x(),
                                 v.vertex().borrow().y()
                             );
-                            v.edges().iter().for_each(|e| {
-                                let neighbors = self.status_structure.insert(e.clone());
-                                match neighbors {
-                                    Some(neighbors) => {
-                                        match neighbors.left {
-                                            Some(left) => {
-                                                self.process_neighbor(&v, e.clone(), left)
-                                            }
-                                            None => {}
-                                        }
-                                        match neighbors.right {
-                                            Some(right) => {
-                                                self.process_neighbor(&v, e.clone(), right)
-                                            }
-                                            None => {}
-                                        }
-                                    }
-                                    None => {}
-                                }
+                            let p_edges = self.status_structure.get_p_edges(v.vertex().clone());
+                            p_edges.l.iter().for_each(|e| {
+                                self.status_structure.remove(e.clone());
+                            });
+                            p_edges.c.iter().for_each(|e| {
+                                self.status_structure.remove(e.clone());
+                            });
+                            p_edges.u.iter().for_each(|e: &Rc<RefCell<Edge2<NT>>>| {
+                                self.status_structure.insert(e.clone());
+                            });
+                            p_edges.c.iter().for_each(|e| {
+                                self.status_structure.insert(e.clone());
                             });
                         }
                         EventVertex2Type::End => {
@@ -83,7 +76,17 @@ impl<NT: NumberType> Arrangement2<NT> {
                                 v.vertex().borrow().y()
                             );
                             v.edges().iter().for_each(|e| {
-                                self.status_structure.remove(e.clone());
+                                let neighbors = self.status_structure.remove(e.clone());
+                                match neighbors {
+                                    Some(neighbors) => {
+                                        self.process_neighbor(
+                                            &v,
+                                            neighbors.left.unwrap(),
+                                            neighbors.right.unwrap(),
+                                        );
+                                    }
+                                    None => {}
+                                }
                             });
                         }
                         EventVertex2Type::Intersection => {
@@ -92,6 +95,10 @@ impl<NT: NumberType> Arrangement2<NT> {
                                 v.vertex().borrow().x(),
                                 v.vertex().borrow().y()
                             );
+                            let edges = v.edges();
+                            let left = edges.get(0).unwrap();
+                            let right = edges.get(1).unwrap();
+                            self.swap_neighbor(&v, left.clone(), right.clone());
                         }
                     }
                 }
@@ -105,19 +112,61 @@ impl<NT: NumberType> Arrangement2<NT> {
     fn process_neighbor(
         &mut self,
         event_vertex: &EventVertex2<NT>,
-        edge: Rc<RefCell<Edge2<NT>>>,
-        neighbor: Rc<RefCell<Edge2<NT>>>,
+        left: Rc<RefCell<Edge2<NT>>>,
+        right: Rc<RefCell<Edge2<NT>>>,
     ) {
-        todo!()
-        // let intersection = edge_2_edge_2_intersection(&neighbor.borrow(), &edge.borrow());
-        // intersection.iter().for_each(|point| {
-        //     let vertex_binding = event_vertex.vertex();
-        //     let vertex = vertex_binding.borrow();
-        //     if point.y() < vertex.y() || (point.y().equals(vertex.y()) && point.x() >= vertex.x()) {
-        //         self.event_queue
-        //             .insert_intersection(Rc::new(RefCell::new(Vertex2::new(point.x(), point.y()))));
-        //     }
-        // });
+        let intersection = edge_2_edge_2_intersection(&left.borrow(), &right.borrow());
+        intersection.iter().for_each(|point| {
+            let vertex_binding = event_vertex.vertex();
+            let vertex = vertex_binding.borrow();
+            if point.y() < vertex.y() {
+                self.event_queue.insert_intersection(
+                    Rc::new(RefCell::new(Vertex2::new(point.x(), point.y()))),
+                    left.clone(),
+                    right.clone(),
+                );
+            } else if point.y().equals(vertex.y()) {
+                match event_vertex.vertex_type() {
+                    EventVertex2Type::Intersection => {
+                        if point.x() > vertex.x() {
+                            self.event_queue.insert_intersection(
+                                Rc::new(RefCell::new(Vertex2::new(point.x(), point.y()))),
+                                left.clone(),
+                                right.clone(),
+                            );
+                        }
+                    }
+                    _ => {
+                        if point.x() >= vertex.x() {
+                            self.event_queue.insert_intersection(
+                                Rc::new(RefCell::new(Vertex2::new(point.x(), point.y()))),
+                                left.clone(),
+                                right.clone(),
+                            );
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    fn swap_neighbor(
+        &mut self,
+        event_vertex: &EventVertex2<NT>,
+        left: Rc<RefCell<Edge2<NT>>>,
+        right: Rc<RefCell<Edge2<NT>>>,
+    ) {
+        if left.borrow().is_horizontal() || right.borrow().is_horizontal() {
+            return;
+        }
+        let neighbors = self.status_structure.swap(left.clone(), right.clone());
+        neighbors.iter().for_each(|neighbor| {
+            self.process_neighbor(
+                event_vertex,
+                neighbor.left.clone().unwrap(),
+                neighbor.right.clone().unwrap(),
+            );
+        });
     }
 
     pub fn vertices(&self) -> Vec<Rc<RefCell<Vertex2<NT>>>> {
