@@ -119,6 +119,15 @@ impl<NT: NumberType> Edge2<NT> {
     pub fn to_arc(&self) -> Arc2<NT> {
         todo!()
     }
+
+    pub fn is_horizontal(&self) -> bool {
+        if self.edge_type == Edge2Type::Arc {
+            return false;
+        }
+        let source = self.source.borrow();
+        let target = self.target.borrow();
+        source.y().equals(target.y())
+    }
 }
 
 impl<NT: NumberType> PartialEq for Edge2<NT> {
