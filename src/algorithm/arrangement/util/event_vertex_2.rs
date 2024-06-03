@@ -65,9 +65,9 @@ impl<NT: NumberType> Ord for EventVertex2<NT> {
             std::cmp::Ordering::Less
         } else {
             if self_vertex.x() > other_vertex.x() {
-                std::cmp::Ordering::Greater
-            } else if self_vertex.x() < other_vertex.x() {
                 std::cmp::Ordering::Less
+            } else if self_vertex.x() < other_vertex.x() {
+                std::cmp::Ordering::Greater
             } else {
                 std::cmp::Ordering::Equal
             }
@@ -88,9 +88,9 @@ impl<NT: NumberType> PartialOrd for EventVertex2<NT> {
             Some(std::cmp::Ordering::Less)
         } else {
             if self_vertex.x() > other_vertex.x() {
-                Some(std::cmp::Ordering::Greater)
-            } else if self_vertex.x() < other_vertex.x() {
                 Some(std::cmp::Ordering::Less)
+            } else if self_vertex.x() < other_vertex.x() {
+                Some(std::cmp::Ordering::Greater)
             } else {
                 Some(std::cmp::Ordering::Equal)
             }

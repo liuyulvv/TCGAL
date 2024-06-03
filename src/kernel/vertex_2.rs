@@ -63,9 +63,9 @@ impl<'a, NT: NumberType> PartialOrd for Vertex2<NT> {
             return Some(std::cmp::Ordering::Less);
         } else {
             if self.x() > other.x() {
-                return Some(std::cmp::Ordering::Greater);
-            } else if self.x() < other.x() {
                 return Some(std::cmp::Ordering::Less);
+            } else if self.x() < other.x() {
+                return Some(std::cmp::Ordering::Greater);
             } else {
                 return Some(std::cmp::Ordering::Equal);
             }
