@@ -1,14 +1,14 @@
 use std::{cell::RefCell, rc::Rc};
 
+type OptionNodeRc<T> = Option<Rc<RefCell<AVLTreeNode<T>>>>;
+
 #[derive(Debug, Clone)]
 pub struct AVLTreeNode<T: Ord + Clone + Copy> {
     value: T,
     height: i32,
-    left: Option<Rc<RefCell<AVLTreeNode<T>>>>,
-    right: Option<Rc<RefCell<AVLTreeNode<T>>>>,
+    left: OptionNodeRc<T>,
+    right: OptionNodeRc<T>,
 }
-
-type OptionNodeRc<T> = Option<Rc<RefCell<AVLTreeNode<T>>>>;
 
 impl<T> AVLTreeNode<T>
 where
