@@ -6,6 +6,7 @@ use std::{
 pub trait DefaultNumberValueTrait {
     fn default() -> Self;
     fn default_eps() -> Self;
+    fn zero() -> Self;
 }
 
 pub trait NumberType:
@@ -33,6 +34,10 @@ impl DefaultNumberValueTrait for f32 {
     fn default_eps() -> Self {
         1e-6
     }
+
+    fn zero() -> Self {
+        0.0
+    }
 }
 
 impl DefaultNumberValueTrait for f64 {
@@ -42,6 +47,10 @@ impl DefaultNumberValueTrait for f64 {
 
     fn default_eps() -> Self {
         1e-12
+    }
+
+    fn zero() -> Self {
+        0.0
     }
 }
 
