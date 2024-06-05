@@ -26,4 +26,8 @@ impl<T: Ord> PriorityQueue<T> {
     pub fn is_empty(&self) -> bool {
         self.heap.is_empty()
     }
+
+    pub fn clear(&mut self) {
+        self.heap.clear();
+    }
 }

@@ -163,6 +163,14 @@ where
             node
         }
     }
+
+    fn mid_order_traversal(node: OptionNodeRc<T>, result: &mut Vec<T>) {
+        if let Some(node) = node {
+            Self::mid_order_traversal(node.borrow().left.clone(), result);
+            result.push(node.borrow().value);
+            Self::mid_order_traversal(node.borrow().right.clone(), result);
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -184,5 +192,15 @@ where
 
     pub fn delete(&mut self, value: T) {
         self.root = AVLTreeNode::delete(self.root.clone(), value);
+    }
+
+    pub fn clear(&mut self) {
+        self.root = None;
+    }
+
+    pub fn mid_order_traversal(&self) -> Vec<T> {
+        let mut result = Vec::new();
+        AVLTreeNode::mid_order_traversal(self.root.clone(), &mut result);
+        result
     }
 }
