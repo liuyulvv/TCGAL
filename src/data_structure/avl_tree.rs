@@ -157,7 +157,7 @@ where
             } else {
                 let right = node.borrow().right.clone();
                 node.borrow_mut().right = Self::right_rotate(right);
-                Self::right_rotate(Some(node))
+                Self::left_rotate(Some(node))
             }
         } else {
             node
