@@ -1,5 +1,5 @@
 [package]
-name = "tcgal"
+name = "rcgal"
 authors = ["liuyulvv"]
 version = "0.1.0"
 edition = "2021"

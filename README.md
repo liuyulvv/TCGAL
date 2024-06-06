@@ -1,3 +1,3 @@
-# TCGAL
+# RCGAL
 
-Tiny Computational Geometry Algorithms Library for Rust.
+Rust Computational Geometry Algorithms Library.

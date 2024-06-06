@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "tcgal"
+name = "rcgal"
 version = "0.1.0"
