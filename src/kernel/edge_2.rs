@@ -11,18 +11,18 @@ pub enum Edge2Type {
 }
 
 #[derive(Debug, Clone)]
-pub struct Edge2<NT: NumberType> {
-    source: Rc<RefCell<Vertex2<NT>>>,
-    target: Rc<RefCell<Vertex2<NT>>>,
+pub struct Edge2<T: NumberType> {
+    source: Rc<RefCell<Vertex2<T>>>,
+    target: Rc<RefCell<Vertex2<T>>>,
     twin: Option<Rc<RefCell<Self>>>,
     next: Option<Rc<RefCell<Self>>>,
     prev: Option<Rc<RefCell<Self>>>,
-    face: Option<Rc<RefCell<Face2<NT>>>>,
+    face: Option<Rc<RefCell<Face2<T>>>>,
     edge_type: Edge2Type,
 }
 
-impl<NT: NumberType> Edge2<NT> {
-    pub fn new_segment(source: Rc<RefCell<Vertex2<NT>>>, target: Rc<RefCell<Vertex2<NT>>>) -> Self {
+impl<T: NumberType> Edge2<T> {
+    pub fn new_segment(source: Rc<RefCell<Vertex2<T>>>, target: Rc<RefCell<Vertex2<T>>>) -> Self {
         if source > target {
             Self {
                 source,
@@ -46,7 +46,7 @@ impl<NT: NumberType> Edge2<NT> {
         }
     }
 
-    pub fn new_arc(source: Rc<RefCell<Vertex2<NT>>>, target: Rc<RefCell<Vertex2<NT>>>) -> Self {
+    pub fn new_arc(source: Rc<RefCell<Vertex2<T>>>, target: Rc<RefCell<Vertex2<T>>>) -> Self {
         Self {
             source,
             target,
@@ -58,19 +58,19 @@ impl<NT: NumberType> Edge2<NT> {
         }
     }
 
-    pub fn source(&self) -> Rc<RefCell<Vertex2<NT>>> {
+    pub fn source(&self) -> Rc<RefCell<Vertex2<T>>> {
         self.source.clone()
     }
 
-    pub fn set_source(&mut self, source: Rc<RefCell<Vertex2<NT>>>) {
+    pub fn set_source(&mut self, source: Rc<RefCell<Vertex2<T>>>) {
         self.source = source
     }
 
-    pub fn target(&self) -> Rc<RefCell<Vertex2<NT>>> {
+    pub fn target(&self) -> Rc<RefCell<Vertex2<T>>> {
         self.target.clone()
     }
 
-    pub fn set_target(&mut self, target: Rc<RefCell<Vertex2<NT>>>) {
+    pub fn set_target(&mut self, target: Rc<RefCell<Vertex2<T>>>) {
         self.target = target
     }
 
@@ -98,11 +98,11 @@ impl<NT: NumberType> Edge2<NT> {
         self.prev = Some(prev)
     }
 
-    pub fn face(&self) -> Option<Rc<RefCell<Face2<NT>>>> {
+    pub fn face(&self) -> Option<Rc<RefCell<Face2<T>>>> {
         self.face.clone()
     }
 
-    pub fn set_face(&mut self, face: Rc<RefCell<Face2<NT>>>) {
+    pub fn set_face(&mut self, face: Rc<RefCell<Face2<T>>>) {
         self.face = Some(face.clone())
     }
 
@@ -110,13 +110,13 @@ impl<NT: NumberType> Edge2<NT> {
         self.edge_type
     }
 
-    pub fn to_segment(&self) -> Segment2<NT> {
+    pub fn to_segment(&self) -> Segment2<T> {
         let source = self.source.borrow();
         let target = self.target.borrow();
         Segment2::new(source.to_point(), target.to_point())
     }
 
-    pub fn to_arc(&self) -> Arc2<NT> {
+    pub fn to_arc(&self) -> Arc2<T> {
         todo!()
     }
 
@@ -130,7 +130,7 @@ impl<NT: NumberType> Edge2<NT> {
     }
 }
 
-impl<NT: NumberType> PartialEq for Edge2<NT> {
+impl<T: NumberType> PartialEq for Edge2<T> {
     fn eq(&self, other: &Self) -> bool {
         std::ptr::eq(self, other)
     }

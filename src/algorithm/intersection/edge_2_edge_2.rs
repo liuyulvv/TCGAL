@@ -7,10 +7,10 @@ use crate::{
     },
 };
 
-pub fn edge_2_edge_2_intersection<NT: NumberType>(
-    e1: &Edge2<NT>,
-    e2: &Edge2<NT>,
-) -> Vec<Vertex2<NT>> {
+pub fn edge_2_edge_2_intersection<T: NumberType>(
+    e1: &Edge2<T>,
+    e2: &Edge2<T>,
+) -> Vec<Vertex2<T>> {
     let edge_type_1 = e1.edge_type();
     let edge_type_2 = e2.edge_type();
     if edge_type_1 == edge_type_2 {

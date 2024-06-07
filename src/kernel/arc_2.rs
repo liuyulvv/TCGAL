@@ -1,14 +1,14 @@
 use super::{circle_2::Circle2, number_type::NumberType, point_2::Point2};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Arc2<NT: NumberType> {
-    support: Circle2<NT>,
-    source: Point2<NT>,
-    target: Point2<NT>,
+pub struct Arc2<T: NumberType> {
+    support: Circle2<T>,
+    source: Point2<T>,
+    target: Point2<T>,
 }
 
-impl<NT: NumberType> Arc2<NT> {
-    pub fn new(support: Circle2<NT>, source: Point2<NT>, target: Point2<NT>) -> Self {
+impl<T: NumberType> Arc2<T> {
+    pub fn new(support: Circle2<T>, source: Point2<T>, target: Point2<T>) -> Self {
         Self {
             support,
             source,
@@ -16,19 +16,19 @@ impl<NT: NumberType> Arc2<NT> {
         }
     }
 
-    pub fn center(&self) -> Point2<NT> {
+    pub fn center(&self) -> Point2<T> {
         self.support.center()
     }
 
-    pub fn radius(&self) -> NT {
+    pub fn radius(&self) -> T {
         self.support.radius()
     }
 
-    pub fn source(&self) -> Point2<NT> {
+    pub fn source(&self) -> Point2<T> {
         Point2::new(self.source.x(), self.source.y())
     }
 
-    pub fn target(&self) -> Point2<NT> {
+    pub fn target(&self) -> Point2<T> {
         Point2::new(self.target.x(), self.target.y())
     }
 }

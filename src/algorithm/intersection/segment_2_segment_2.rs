@@ -3,9 +3,9 @@ use crate::{
     kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2},
 };
 
-pub fn is_segment_2_segment_2_intersected<NT: NumberType>(
-    s1: &Segment2<NT>,
-    s2: &Segment2<NT>,
+pub fn is_segment_2_segment_2_intersected<T: NumberType>(
+    s1: &Segment2<T>,
+    s2: &Segment2<T>,
 ) -> bool {
     let ab = s1.target() - s1.source();
     let ac = s2.source() - s1.source();
@@ -13,14 +13,14 @@ pub fn is_segment_2_segment_2_intersected<NT: NumberType>(
     let cd = s2.target() - s2.source();
     let ca = s1.source() - s2.source();
     let cb = s1.target() - s2.source();
-    let eps = NT::default_eps();
+    let eps = T::default_eps();
     ab.cross(&ac) * ab.cross(&ad) < eps && cd.cross(&ca) * cd.cross(&cb) < eps
 }
 
-pub fn segment_2_segment_2_intersection<NT: NumberType>(
-    s1: &Segment2<NT>,
-    s2: &Segment2<NT>,
-) -> Vec<Point2<NT>> {
+pub fn segment_2_segment_2_intersection<T: NumberType>(
+    s1: &Segment2<T>,
+    s2: &Segment2<T>,
+) -> Vec<Point2<T>> {
     let mut result = Vec::new();
     if is_segment_2_segment_2_intersected(s1, s2) {
         if is_point_2_on_segment_2(&s1.source(), s2) {

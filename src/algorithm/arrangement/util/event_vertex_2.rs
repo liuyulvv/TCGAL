@@ -10,14 +10,14 @@ pub enum EventVertex2Type {
 }
 
 #[derive(Debug, Clone)]
-pub struct EventVertex2<NT: NumberType> {
-    vertex: Rc<RefCell<Vertex2<NT>>>,
+pub struct EventVertex2<T: NumberType> {
+    vertex: Rc<RefCell<Vertex2<T>>>,
     vertex_type: EventVertex2Type,
-    edges: Vec<Rc<RefCell<Edge2<NT>>>>,
+    edges: Vec<Rc<RefCell<Edge2<T>>>>,
 }
 
-impl<NT: NumberType> EventVertex2<NT> {
-    pub fn new(vertex: Rc<RefCell<Vertex2<NT>>>, vertex_type: EventVertex2Type) -> Self {
+impl<T: NumberType> EventVertex2<T> {
+    pub fn new(vertex: Rc<RefCell<Vertex2<T>>>, vertex_type: EventVertex2Type) -> Self {
         Self {
             vertex,
             vertex_type,
@@ -25,11 +25,11 @@ impl<NT: NumberType> EventVertex2<NT> {
         }
     }
 
-    pub fn add_edge(&mut self, edge: Rc<RefCell<Edge2<NT>>>) {
+    pub fn add_edge(&mut self, edge: Rc<RefCell<Edge2<T>>>) {
         self.edges.push(edge);
     }
 
-    pub fn vertex(&self) -> Rc<RefCell<Vertex2<NT>>> {
+    pub fn vertex(&self) -> Rc<RefCell<Vertex2<T>>> {
         self.vertex.clone()
     }
 
@@ -37,12 +37,12 @@ impl<NT: NumberType> EventVertex2<NT> {
         self.vertex_type.clone()
     }
 
-    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<NT>>>> {
+    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<T>>>> {
         self.edges.clone()
     }
 }
 
-impl<NT: NumberType> PartialEq for EventVertex2<NT> {
+impl<T: NumberType> PartialEq for EventVertex2<T> {
     fn eq(&self, other: &Self) -> bool {
         let self_vertex = self.vertex.borrow();
         let other_vertex = other.vertex.borrow();
@@ -52,7 +52,7 @@ impl<NT: NumberType> PartialEq for EventVertex2<NT> {
 
 impl<Nt: NumberType> Eq for EventVertex2<Nt> {}
 
-impl<NT: NumberType> Ord for EventVertex2<NT> {
+impl<T: NumberType> Ord for EventVertex2<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         let self_vertex = self.vertex.borrow();
         let other_vertex = other.vertex.borrow();
@@ -75,7 +75,7 @@ impl<NT: NumberType> Ord for EventVertex2<NT> {
     }
 }
 
-impl<NT: NumberType> PartialOrd for EventVertex2<NT> {
+impl<T: NumberType> PartialOrd for EventVertex2<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         let self_vertex = self.vertex.borrow();
         let other_vertex = other.vertex.borrow();

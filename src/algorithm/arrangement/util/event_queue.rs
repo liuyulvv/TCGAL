@@ -5,18 +5,18 @@ use crate::kernel::{edge_2::Edge2, number_type::NumberType, vertex_2::Vertex2};
 use super::event_vertex_2::{EventVertex2, EventVertex2Type};
 
 #[derive(Debug, Clone)]
-pub struct EventQueue<NT: NumberType> {
-    events: BinaryHeap<EventVertex2<NT>>,
+pub struct EventQueue<T: NumberType> {
+    events: BinaryHeap<EventVertex2<T>>,
 }
 
-impl<NT: NumberType> EventQueue<NT> {
+impl<T: NumberType> EventQueue<T> {
     pub fn new() -> Self {
         Self {
             events: BinaryHeap::new(),
         }
     }
 
-    pub fn insert_edge(&mut self, edge: &Rc<RefCell<Edge2<NT>>>) {
+    pub fn insert_edge(&mut self, edge: &Rc<RefCell<Edge2<T>>>) {
         let edge_binding = edge.borrow();
 
         let mut event = EventVertex2::new(edge_binding.source(), EventVertex2Type::Start);
@@ -30,9 +30,9 @@ impl<NT: NumberType> EventQueue<NT> {
 
     pub fn insert_intersection(
         &mut self,
-        vertex: Rc<RefCell<Vertex2<NT>>>,
-        left_edge: Rc<RefCell<Edge2<NT>>>,
-        right_edge: Rc<RefCell<Edge2<NT>>>,
+        vertex: Rc<RefCell<Vertex2<T>>>,
+        left_edge: Rc<RefCell<Edge2<T>>>,
+        right_edge: Rc<RefCell<Edge2<T>>>,
     ) {
         let mut event = EventVertex2::new(vertex.clone(), EventVertex2Type::Intersection);
         event.add_edge(left_edge.clone());
@@ -40,11 +40,11 @@ impl<NT: NumberType> EventQueue<NT> {
         self.events.push(event);
     }
 
-    pub fn pop(&mut self) -> Option<EventVertex2<NT>> {
+    pub fn pop(&mut self) -> Option<EventVertex2<T>> {
         self.events.pop()
     }
 
-    pub fn remove(&mut self, vertex: &Rc<RefCell<Vertex2<NT>>>) {
+    pub fn remove(&mut self, vertex: &Rc<RefCell<Vertex2<T>>>) {
         self.events.retain(|e| {
             let binding = e.vertex();
             let e_vertex = binding.borrow();

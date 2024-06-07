@@ -8,9 +8,9 @@ pub enum Point2Segment2Location {
     Collinear,
 }
 
-pub fn is_point_2_on_segment_2<NT: NumberType>(
-    point_2: &Point2<NT>,
-    segment_2: &Segment2<NT>,
+pub fn is_point_2_on_segment_2<T: NumberType>(
+    point_2: &Point2<T>,
+    segment_2: &Segment2<T>,
 ) -> bool {
     let source = segment_2.source();
     let target = segment_2.target();
@@ -19,30 +19,30 @@ pub fn is_point_2_on_segment_2<NT: NumberType>(
     let vec_bc = *point_2 - target;
     let dot_ab_ac = vec_ab.dot(&vec_ac);
     let dot_ab_ab = vec_ab.dot(&vec_ab);
-    let eps = NT::default_eps();
+    let eps = T::default_eps();
     vec_ab.cross(&vec_ac).abs() < eps
         && vec_ab.cross(&vec_bc).abs() < eps
         && dot_ab_ac >= -eps
         && dot_ab_ac <= dot_ab_ab
 }
 
-pub fn locate_point_2_segment_2<NT: NumberType>(
-    point_2: &Point2<NT>,
-    segment_2: &Segment2<NT>,
+pub fn locate_point_2_segment_2<T: NumberType>(
+    point_2: &Point2<T>,
+    segment_2: &Segment2<T>,
 ) -> Point2Segment2Location {
     let source = segment_2.source();
     let target = segment_2.target();
     let vec_ab = target - source;
     let vec_ac = *point_2 - source;
     let area = vec_ab.cross(&vec_ac);
-    if area > NT::default_eps() {
+    if area > T::default_eps() {
         Point2Segment2Location::Left
-    } else if area < -NT::default_eps() {
+    } else if area < -T::default_eps() {
         Point2Segment2Location::Right
     } else {
         let dot_ab_ac = vec_ab.dot(&vec_ac);
         let dot_ab_ab = vec_ab.dot(&vec_ab);
-        if dot_ab_ac <= dot_ab_ab && dot_ab_ac >= -NT::default_eps() {
+        if dot_ab_ac <= dot_ab_ab && dot_ab_ac >= -T::default_eps() {
             Point2Segment2Location::On
         } else {
             Point2Segment2Location::Collinear

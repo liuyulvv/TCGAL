@@ -3,17 +3,17 @@ use std::{cell::RefCell, rc::Rc};
 use super::{edge_2::Edge2, number_type::NumberType};
 
 #[derive(Debug, Clone)]
-pub struct Face2<NT: NumberType> {
-    edges: Vec<Rc<RefCell<Edge2<NT>>>>,
+pub struct Face2<T: NumberType> {
+    edges: Vec<Rc<RefCell<Edge2<T>>>>,
 }
 
-impl<NT: NumberType> Face2<NT> {
-    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<NT>>>> {
+impl<T: NumberType> Face2<T> {
+    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<T>>>> {
         self.edges.clone()
     }
 }
 
-impl<NT: NumberType> PartialEq for Face2<NT> {
+impl<T: NumberType> PartialEq for Face2<T> {
     fn eq(&self, other: &Self) -> bool {
         std::ptr::eq(self, other)
     }

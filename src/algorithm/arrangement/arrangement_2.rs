@@ -13,16 +13,16 @@ use super::util::{
 };
 
 #[derive(Debug, Clone)]
-pub struct Arrangement2<NT: NumberType> {
-    vertices: Vec<Rc<RefCell<Vertex2<NT>>>>,
-    edges: Vec<Rc<RefCell<Edge2<NT>>>>,
-    faces: Vec<Rc<RefCell<Face2<NT>>>>,
-    event_queue: EventQueue<NT>,
-    status_structure: StatusStructure<NT>,
+pub struct Arrangement2<T: NumberType> {
+    vertices: Vec<Rc<RefCell<Vertex2<T>>>>,
+    edges: Vec<Rc<RefCell<Edge2<T>>>>,
+    faces: Vec<Rc<RefCell<Face2<T>>>>,
+    event_queue: EventQueue<T>,
+    status_structure: StatusStructure<T>,
 }
 
-impl<NT: NumberType> Arrangement2<NT> {
-    pub fn new(edges: Vec<Edge2<NT>>) -> Self {
+impl<T: NumberType> Arrangement2<T> {
+    pub fn new(edges: Vec<Edge2<T>>) -> Self {
         Self {
             vertices: Vec::new(),
             edges: edges
@@ -62,7 +62,7 @@ impl<NT: NumberType> Arrangement2<NT> {
                             p_edges.c.iter().for_each(|e| {
                                 self.status_structure.remove(e.clone());
                             });
-                            p_edges.u.iter().for_each(|e: &Rc<RefCell<Edge2<NT>>>| {
+                            p_edges.u.iter().for_each(|e: &Rc<RefCell<Edge2<T>>>| {
                                 self.status_structure.insert(e.clone());
                             });
                             p_edges.c.iter().for_each(|e| {
@@ -111,9 +111,9 @@ impl<NT: NumberType> Arrangement2<NT> {
 
     fn process_neighbor(
         &mut self,
-        event_vertex: &EventVertex2<NT>,
-        left: Rc<RefCell<Edge2<NT>>>,
-        right: Rc<RefCell<Edge2<NT>>>,
+        event_vertex: &EventVertex2<T>,
+        left: Rc<RefCell<Edge2<T>>>,
+        right: Rc<RefCell<Edge2<T>>>,
     ) {
         let intersection = edge_2_edge_2_intersection(&left.borrow(), &right.borrow());
         intersection.iter().for_each(|point| {
@@ -152,9 +152,9 @@ impl<NT: NumberType> Arrangement2<NT> {
 
     fn swap_neighbor(
         &mut self,
-        event_vertex: &EventVertex2<NT>,
-        left: Rc<RefCell<Edge2<NT>>>,
-        right: Rc<RefCell<Edge2<NT>>>,
+        event_vertex: &EventVertex2<T>,
+        left: Rc<RefCell<Edge2<T>>>,
+        right: Rc<RefCell<Edge2<T>>>,
     ) {
         if left.borrow().is_horizontal() || right.borrow().is_horizontal() {
             return;
@@ -169,15 +169,15 @@ impl<NT: NumberType> Arrangement2<NT> {
         });
     }
 
-    pub fn vertices(&self) -> Vec<Rc<RefCell<Vertex2<NT>>>> {
+    pub fn vertices(&self) -> Vec<Rc<RefCell<Vertex2<T>>>> {
         self.vertices.clone()
     }
 
-    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<NT>>>> {
+    pub fn edges(&self) -> Vec<Rc<RefCell<Edge2<T>>>> {
         self.edges.clone()
     }
 
-    pub fn faces(&self) -> Vec<Rc<RefCell<Face2<NT>>>> {
+    pub fn faces(&self) -> Vec<Rc<RefCell<Face2<T>>>> {
         self.faces.clone()
     }
 }
