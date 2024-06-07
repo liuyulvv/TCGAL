@@ -3,31 +3,31 @@ use std::ops::{Add, Div, Mul, Sub};
 use super::number_type::NumberType;
 
 #[derive(Debug, Clone, Copy)]
-pub struct Vector2<NT: NumberType> {
-    x: NT,
-    y: NT,
+pub struct Vector2<T: NumberType> {
+    x: T,
+    y: T,
 }
 
-impl<NT: NumberType> Vector2<NT> {
-    pub fn new(x: NT, y: NT) -> Self {
+impl<T: NumberType> Vector2<T> {
+    pub fn new(x: T, y: T) -> Self {
         Self { x, y }
     }
 
-    pub fn x(&self) -> NT {
+    pub fn x(&self) -> T {
         self.x
     }
 
-    pub fn y(&self) -> NT {
+    pub fn y(&self) -> T {
         self.y
     }
 
-    pub fn length(&self) -> NT {
+    pub fn length(&self) -> T {
         (self.x * self.x + self.y * self.y).sqrt()
     }
 
     pub fn normalize(&self) -> Self {
         let length = self.length();
-        let eps = NT::default_eps();
+        let eps = T::default_eps();
         if length < eps {
             return *self;
         }
@@ -37,16 +37,16 @@ impl<NT: NumberType> Vector2<NT> {
         }
     }
 
-    pub fn dot(&self, other: &Self) -> NT {
+    pub fn dot(&self, other: &Self) -> T {
         self.x * other.x + self.y * other.y
     }
 
-    pub fn cross(&self, other: &Self) -> NT {
+    pub fn cross(&self, other: &Self) -> T {
         self.x * other.y - self.y * other.x
     }
 }
 
-impl<NT: NumberType> Add for Vector2<NT> {
+impl<T: NumberType> Add for Vector2<T> {
     type Output = Self;
 
     fn add(self, other: Self) -> Self::Output {
@@ -54,7 +54,7 @@ impl<NT: NumberType> Add for Vector2<NT> {
     }
 }
 
-impl<NT: NumberType> Sub for Vector2<NT> {
+impl<T: NumberType> Sub for Vector2<T> {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self::Output {
@@ -62,23 +62,23 @@ impl<NT: NumberType> Sub for Vector2<NT> {
     }
 }
 
-impl<NT: NumberType> Mul<NT> for Vector2<NT> {
+impl<T: NumberType> Mul<T> for Vector2<T> {
     type Output = Self;
 
-    fn mul(self, rhs: NT) -> Self::Output {
+    fn mul(self, rhs: T) -> Self::Output {
         Self::new(self.x * rhs, self.y * rhs)
     }
 }
 
-impl<NT: NumberType> Div<NT> for Vector2<NT> {
+impl<T: NumberType> Div<T> for Vector2<T> {
     type Output = Self;
 
-    fn div(self, rhs: NT) -> Self::Output {
+    fn div(self, rhs: T) -> Self::Output {
         Self::new(self.x / rhs, self.y / rhs)
     }
 }
 
-impl<NT: NumberType> PartialEq for Vector2<NT> {
+impl<T: NumberType> PartialEq for Vector2<T> {
     fn eq(&self, other: &Self) -> bool {
         self.x == other.x && self.y == other.y
     }
