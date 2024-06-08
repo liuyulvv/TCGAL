@@ -14,7 +14,7 @@ impl<T: NumberType> Face2<T> {
 }
 
 impl<T: NumberType> PartialEq for Face2<T> {
-    fn eq(&self, other: &Self) -> bool {
+    fn eq(&self, _other: &Self) -> bool {
         todo!()
     }
 }
