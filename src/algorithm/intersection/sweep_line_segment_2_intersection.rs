@@ -1,11 +1,12 @@
-use std::collections::HashSet;
-
 use crate::{
     algorithm::{
         intersection::segment_2_segment_2::segment_2_segment_2_intersection,
         location::point_2_segment_2::is_point_2_on_segment_2,
     },
-    data_structure::{avl_tree::AVLTree, priority_queue::PriorityQueue},
+    data_structure::{
+        avl_tree::{AVLTree, AVLTreeOption},
+        priority_queue::PriorityQueue,
+    },
     kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2},
 };
 
@@ -19,7 +20,7 @@ pub struct SweepLineSegment2Intersection<T: NumberType> {
     segments: Vec<Segment2<T>>,
     event_queue: PriorityQueue<Point2<T>>,
     status_tree: AVLTree<StatusNode<T>>,
-    intersection_points: Vec<Point2<T>>,
+    intersection_points: AVLTree<Point2<T>>,
     last_status_value: Option<T>,
 }
 
@@ -27,8 +28,8 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
     pub fn new(input_segments: &Vec<Segment2<T>>) -> Self {
         let mut event_queue = PriorityQueue::new();
         let mut segments = Vec::new();
-        let status_tree: AVLTree<StatusNode<T>> = AVLTree::new();
-        let intersection_points = Vec::new();
+        let status_tree: AVLTree<StatusNode<T>> = AVLTree::new(AVLTreeOption::SameNodeInsertRight);
+        let intersection_points = AVLTree::new(AVLTreeOption::DisableSameNode);
         for segment in input_segments {
             let source = segment.source();
             let target = segment.target();
@@ -64,7 +65,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
             self.handle_event_point(&event_point);
             self.last_status_value = Some(event_point.y());
         }
-        self.intersection_points.iter().cloned().collect()
+        self.intersection_points.mid_order_traversal()
     }
 
     fn handle_event_point(&mut self, event_point: &Point2<T>) {
@@ -75,7 +76,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
             return;
         }
         if u_p.len() + l_p.len() + c_p.len() > 1 {
-            self.intersection_points.push(event_point.clone());
+            self.intersection_points.insert(event_point.clone());
         }
         for segment in &l_p {
             self.status_tree.delete(StatusNode {
