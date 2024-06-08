@@ -7,10 +7,7 @@ pub enum Point2Circle2Location {
     Outside,
 }
 
-pub fn is_point_2_on_circle_2<T: NumberType>(
-    point_2: &Point2<T>,
-    circle_2: &Circle2<T>,
-) -> bool {
+pub fn is_point_2_on_circle_2<T: NumberType>(point_2: &Point2<T>, circle_2: &Circle2<T>) -> bool {
     let center = circle_2.center();
     let radius = circle_2.radius();
     let vec_center_point = *point_2 - center;
