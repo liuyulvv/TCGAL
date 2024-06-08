@@ -49,13 +49,13 @@ impl<T: NumberType> Vertex2<T> {
     }
 }
 
-impl<'a, T: NumberType> PartialEq for Vertex2<T> {
+impl<T: NumberType> PartialEq for Vertex2<T> {
     fn eq(&self, other: &Self) -> bool {
         self.equals(other)
     }
 }
 
-impl<'a, T: NumberType> PartialOrd for Vertex2<T> {
+impl<T: NumberType> PartialOrd for Vertex2<T> {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         if self.y() > other.y() {
             return Some(std::cmp::Ordering::Greater);

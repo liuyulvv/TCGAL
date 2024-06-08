@@ -32,3 +32,12 @@ impl<T: NumberType> Arc2<T> {
         Point2::new(self.target.x(), self.target.y())
     }
 }
+
+impl<T: NumberType> PartialEq for Arc2<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.source == other.source
+            && self.target == other.target
+            && self.center() == other.center()
+            && self.radius() == other.radius()
+    }
+}

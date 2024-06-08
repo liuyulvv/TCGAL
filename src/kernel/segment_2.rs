@@ -19,3 +19,9 @@ impl<T: NumberType> Segment2<T> {
         Point2::new(self.target.x(), self.target.y())
     }
 }
+
+impl<T: NumberType> PartialEq for Segment2<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.source == other.source && self.target == other.target
+    }
+}

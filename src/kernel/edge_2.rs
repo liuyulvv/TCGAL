@@ -23,26 +23,14 @@ pub struct Edge2<T: NumberType> {
 
 impl<T: NumberType> Edge2<T> {
     pub fn new_segment(source: Rc<RefCell<Vertex2<T>>>, target: Rc<RefCell<Vertex2<T>>>) -> Self {
-        if source > target {
-            Self {
-                source,
-                target,
-                twin: None,
-                next: None,
-                prev: None,
-                face: None,
-                edge_type: Edge2Type::Segment,
-            }
-        } else {
-            Self {
-                source: target,
-                target: source,
-                twin: None,
-                next: None,
-                prev: None,
-                face: None,
-                edge_type: Edge2Type::Segment,
-            }
+        Self {
+            source,
+            target,
+            twin: None,
+            next: None,
+            prev: None,
+            face: None,
+            edge_type: Edge2Type::Segment,
         }
     }
 
@@ -119,19 +107,24 @@ impl<T: NumberType> Edge2<T> {
     pub fn to_arc(&self) -> Arc2<T> {
         todo!()
     }
-
-    pub fn is_horizontal(&self) -> bool {
-        if self.edge_type == Edge2Type::Arc {
-            return false;
-        }
-        let source = self.source.borrow();
-        let target = self.target.borrow();
-        source.y().equals(target.y())
-    }
 }
 
 impl<T: NumberType> PartialEq for Edge2<T> {
     fn eq(&self, other: &Self) -> bool {
-        std::ptr::eq(self, other)
+        if self.edge_type != other.edge_type {
+            return false;
+        }
+        match self.edge_type {
+            Edge2Type::Segment => {
+                let self_segment = self.to_segment();
+                let other_segment = other.to_segment();
+                self_segment == other_segment
+            }
+            Edge2Type::Arc => {
+                let self_arc = self.to_arc();
+                let other_arc = other.to_arc();
+                self_arc == other_arc
+            }
+        }
     }
 }
