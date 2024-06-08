@@ -35,8 +35,4 @@ impl<T: NumberType> PartialEq for Line2<T> {
         let eps = T::default_eps();
         return det.abs() < eps && det_c < eps && det_a < eps;
     }
-
-    fn ne(&self, other: &Self) -> bool {
-        !self.eq(other)
-    }
 }
