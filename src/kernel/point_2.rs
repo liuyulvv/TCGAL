@@ -23,7 +23,8 @@ impl<T: NumberType> Point2<T> {
 
     pub fn equals(&self, other: &Self) -> bool {
         let eps = T::default_eps();
-        (self.x - other.x).abs() < eps && (self.y - other.y).abs() < eps
+        ((self.x - other.x) * (self.x - other.x) + (self.y - other.y) * (self.y - other.y)).sqrt()
+            < eps
     }
 
     pub fn get_vector(&self) -> Vector2<T> {
