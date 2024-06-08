@@ -30,15 +30,27 @@ where
         }
     }
 
-    pub fn insert(node: OptionNodeRc<T>, value: T) -> OptionNodeRc<T> {
+    pub fn insert(node: OptionNodeRc<T>, value: T, option: &AVLTreeOption) -> OptionNodeRc<T> {
         match node {
             Some(mut node) => {
                 if value < node.borrow().value {
                     let left = node.borrow().left.clone();
-                    node.borrow_mut().left = Self::insert(left, value);
-                } else {
+                    node.borrow_mut().left = Self::insert(left, value, option);
+                } else if value > node.borrow().value {
                     let right = node.borrow().right.clone();
-                    node.borrow_mut().right = Self::insert(right, value);
+                    node.borrow_mut().right = Self::insert(right, value, option);
+                } else {
+                    match option {
+                        AVLTreeOption::DisableSameNode => {}
+                        AVLTreeOption::SameNodeInsertRight => {
+                            let right = node.borrow().right.clone();
+                            node.borrow_mut().right = Self::insert(right, value, option);
+                        }
+                        AVLTreeOption::SameNodeInsertLeft => {
+                            let left = node.borrow().left.clone();
+                            node.borrow_mut().left = Self::insert(left, value, option);
+                        }
+                    }
                 }
                 Self::update_height(Some(node.clone()));
                 node = Self::rotate(Some(node)).unwrap();
@@ -174,20 +186,28 @@ where
 }
 
 #[derive(Debug, Clone)]
+pub enum AVLTreeOption {
+    DisableSameNode,
+    SameNodeInsertRight,
+    SameNodeInsertLeft,
+}
+
+#[derive(Debug, Clone)]
 pub struct AVLTree<T: Ord + Clone + Copy> {
     root: OptionNodeRc<T>,
+    option: AVLTreeOption,
 }
 
 impl<T> AVLTree<T>
 where
     T: Ord + Clone + Copy,
 {
-    pub fn new() -> Self {
-        Self { root: None }
+    pub fn new(option: AVLTreeOption) -> Self {
+        Self { root: None, option }
     }
 
     pub fn insert(&mut self, value: T) {
-        self.root = AVLTreeNode::insert(self.root.clone(), value);
+        self.root = AVLTreeNode::insert(self.root.clone(), value, &self.option);
     }
 
     pub fn delete(&mut self, value: T) {
