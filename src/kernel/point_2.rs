@@ -30,6 +30,12 @@ impl<T: NumberType> Point2<T> {
     pub fn get_vector(&self) -> Vector2<T> {
         Vector2::new(self.x, self.y)
     }
+
+    pub fn distance(&self, other: &Self) -> T {
+        let dx = self.x - other.x;
+        let dy = self.y - other.y;
+        (dx * dx + dy * dy).sqrt()
+    }
 }
 
 impl<T: NumberType> Add for Point2<T> {
