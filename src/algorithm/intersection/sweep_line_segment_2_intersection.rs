@@ -130,8 +130,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
                 } else {
                     return std::cmp::Ordering::Greater;
                 }
-            }
-            if a_value < b_value {
+            } else if a_value < b_value {
                 return std::cmp::Ordering::Less;
             } else {
                 return std::cmp::Ordering::Greater;
@@ -272,8 +271,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
                 } else {
                     return std::cmp::Ordering::Greater;
                 }
-            }
-            if a_value < b_value {
+            } else if a_value < b_value {
                 return std::cmp::Ordering::Less;
             } else {
                 return std::cmp::Ordering::Greater;

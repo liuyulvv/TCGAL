@@ -64,20 +64,21 @@ impl<T: NumberType> PartialEq for Point2<T> {
 
 impl<T: NumberType> Ord for Point2<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        if self.equals(other) {
-            return std::cmp::Ordering::Equal;
-        }
-        if self.x() < other.x() {
-            return std::cmp::Ordering::Greater;
-        } else if self.x() > other.x() {
-            return std::cmp::Ordering::Less;
+        if self.x().equals(other.x()) {
+            if self.y().equals(other.y()) {
+                return std::cmp::Ordering::Equal;
+            } else {
+                if self.y() > other.y() {
+                    return std::cmp::Ordering::Less;
+                } else {
+                    return std::cmp::Ordering::Greater;
+                }
+            }
         } else {
-            if self.y() > other.y() {
-                return std::cmp::Ordering::Less;
-            } else if self.y() < other.y() {
+            if self.x() < other.x() {
                 return std::cmp::Ordering::Greater;
             } else {
-                return std::cmp::Ordering::Equal;
+                return std::cmp::Ordering::Less;
             }
         }
     }
