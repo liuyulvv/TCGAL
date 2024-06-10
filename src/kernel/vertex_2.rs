@@ -49,26 +49,37 @@ impl<T: NumberType> Vertex2<T> {
     }
 }
 
+impl<T: NumberType> Eq for Vertex2<T> {}
+
 impl<T: NumberType> PartialEq for Vertex2<T> {
     fn eq(&self, other: &Self) -> bool {
         self.equals(other)
     }
 }
 
-impl<T: NumberType> PartialOrd for Vertex2<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        if self.y() > other.y() {
-            return Some(std::cmp::Ordering::Greater);
-        } else if self.y() < other.y() {
-            return Some(std::cmp::Ordering::Less);
+impl<T: NumberType> Ord for Vertex2<T> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        if self.equals(other) {
+            return std::cmp::Ordering::Equal;
+        }
+        if self.x() < other.x() {
+            return std::cmp::Ordering::Greater;
+        } else if self.x() > other.x() {
+            return std::cmp::Ordering::Less;
         } else {
-            if self.x() > other.x() {
-                return Some(std::cmp::Ordering::Less);
-            } else if self.x() < other.x() {
-                return Some(std::cmp::Ordering::Greater);
+            if self.y() > other.y() {
+                return std::cmp::Ordering::Less;
+            } else if self.y() < other.y() {
+                return std::cmp::Ordering::Greater;
             } else {
-                return Some(std::cmp::Ordering::Equal);
+                return std::cmp::Ordering::Equal;
             }
         }
+    }
+}
+
+impl<T: NumberType> PartialOrd for Vertex2<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
     }
 }

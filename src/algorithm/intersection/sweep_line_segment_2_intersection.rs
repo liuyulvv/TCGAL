@@ -21,7 +21,7 @@ pub struct SweepLineSegment2Intersection<T: NumberType> {
     event_queue: PriorityQueue<Point2<T>>,
     status_tree: AVLTree<StatusNode<T>>,
     intersection_points: AVLTree<Point2<T>>,
-    last_status_value: Option<T>,
+    last_event_point: Option<Point2<T>>,
 }
 
 impl<T: NumberType> SweepLineSegment2Intersection<T> {
@@ -48,7 +48,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
             event_queue,
             status_tree,
             intersection_points,
-            last_status_value: None,
+            last_event_point: None,
         }
     }
 
@@ -63,58 +63,75 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         while !self.event_queue.is_empty() {
             let event_point = self.event_queue.pop().unwrap();
             self.handle_event_point(&event_point);
-            self.last_status_value = Some(event_point.y());
+            self.last_event_point = Some(event_point);
         }
         self.intersection_points.mid_order_traversal()
     }
 
     fn handle_event_point(&mut self, event_point: &Point2<T>) {
-        let u_p = self.get_segment_with_source(event_point);
-        let l_p = self.get_active_segment_with_target(event_point);
-        let c_p = self.get_active_segment_containing_point(event_point);
-        if u_p.is_empty() && l_p.is_empty() && c_p.is_empty() {
+        let source_is_p = self.get_segment_with_source(event_point);
+        let target_is_p = self.get_active_segment_with_target(event_point);
+        let contain_p = self.get_active_segment_containing_point(event_point);
+        if source_is_p.is_empty() && target_is_p.is_empty() && contain_p.is_empty() {
             return;
         }
-        if u_p.len() + l_p.len() + c_p.len() > 1 {
+        if source_is_p.len() + target_is_p.len() + contain_p.len() > 1 {
             self.intersection_points.insert(event_point.clone());
         }
-        for segment in &l_p {
+        for segment in &target_is_p {
             self.status_tree.delete(StatusNode {
-                value: match self.last_status_value {
-                    Some(value) => self.calculate_segment_value(segment, value),
-                    None => segment.source().x(),
+                value: match self.last_event_point {
+                    Some(value) => self.calculate_segment_value(segment, &value),
+                    None => segment.source().y(),
                 },
                 segment: segment.clone(),
             });
         }
-        for segment in &c_p {
+        for segment in &contain_p {
             self.status_tree.delete(StatusNode {
-                value: match self.last_status_value {
-                    Some(value) => self.calculate_segment_value(segment, value),
-                    None => segment.source().x(),
+                value: match self.last_event_point {
+                    Some(value) => self.calculate_segment_value(segment, &value),
+                    None => segment.source().y(),
                 },
                 segment: segment.clone(),
             });
         }
-        let u_p_empty = u_p.is_empty();
-        let c_p_empty = c_p.is_empty();
+        let source_is_p_empty = source_is_p.is_empty();
+        let contain_p_empty = contain_p.is_empty();
 
-        let mid_order_traversal = self.status_tree.mid_order_traversal();
+        let old_status_nodes = self.status_tree.mid_order_traversal();
         self.status_tree.clear();
         let mut reinserted_segments = Vec::new();
-        for segment in &mid_order_traversal {
-            reinserted_segments.push(segment.segment.clone());
+        for status_node in old_status_nodes {
+            reinserted_segments.push(status_node.segment.clone());
         }
-        for segment in &u_p {
+        for segment in &source_is_p {
             reinserted_segments.push(segment.clone());
         }
-        for segment in &c_p {
+        for segment in &contain_p {
             reinserted_segments.push(segment.clone());
         }
         reinserted_segments.sort_by(|a, b| {
-            let a_target_x = a.target().x();
-            let b_target_x = b.target().x();
-            if a_target_x < b_target_x {
+            let a_value = self.calculate_segment_value(a, &event_point);
+            let b_value = self.calculate_segment_value(b, &event_point);
+            if a_value.equals(b_value) {
+                let a_target_y = a.target().y();
+                let b_target_y = b.target().y();
+                if a_target_y.equals(b_target_y) {
+                    let a_target_x = a.target().x();
+                    let b_target_x = b.target().x();
+                    if a_target_x < b_target_x {
+                        return std::cmp::Ordering::Greater;
+                    } else {
+                        return std::cmp::Ordering::Less;
+                    }
+                } else if a_target_y < b_target_y {
+                    return std::cmp::Ordering::Less;
+                } else {
+                    return std::cmp::Ordering::Greater;
+                }
+            }
+            if a_value < b_value {
                 return std::cmp::Ordering::Less;
             } else {
                 return std::cmp::Ordering::Greater;
@@ -122,12 +139,13 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         });
         for segment in reinserted_segments {
             self.status_tree.insert(StatusNode {
-                value: self.calculate_segment_value(&segment, event_point.y()),
+                value: self.calculate_segment_value(&segment, &event_point),
                 segment,
             });
         }
+
         let mid_order_traversal = self.status_tree.mid_order_traversal();
-        if u_p_empty && c_p_empty {
+        if source_is_p_empty && contain_p_empty {
             let neighbors = self.get_neighbors_with_point(event_point);
             match neighbors {
                 Some((segment_left, segment_right)) => {
@@ -136,7 +154,9 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
                 None => {}
             }
         } else {
-            let segment_left = self.get_left_right_in_u_c(&u_p, &c_p).0;
+            let segment_left = self
+                .get_left_right_in_u_c(&source_is_p, &contain_p, &event_point)
+                .0;
             let segment_left_left = self.get_left_of_segment(&segment_left, &mid_order_traversal);
             match segment_left_left {
                 Some(segment) => {
@@ -144,7 +164,9 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
                 }
                 None => {}
             }
-            let segment_right = self.get_left_right_in_u_c(&u_p, &c_p).1;
+            let segment_right = self
+                .get_left_right_in_u_c(&source_is_p, &contain_p, &event_point)
+                .1;
             let segment_right_right =
                 self.get_right_of_segment(&segment_right, &mid_order_traversal);
             match segment_right_right {
@@ -198,7 +220,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         let mut index = 0;
         let mut flag = false;
         for (status_index, status_node) in status_nodes.iter().enumerate() {
-            if status_node.value >= point.x() {
+            if status_node.value >= point.y() {
                 index = status_index;
                 flag = true;
                 break;
@@ -220,20 +242,38 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
 
     fn get_left_right_in_u_c(
         &self,
-        u_p: &Vec<Segment2<T>>,
-        c_p: &Vec<Segment2<T>>,
+        source_is_p: &Vec<Segment2<T>>,
+        contain_p: &Vec<Segment2<T>>,
+        event_point: &Point2<T>,
     ) -> (Segment2<T>, Segment2<T>) {
         let mut segments = Vec::new();
-        for segment in u_p {
+        for segment in source_is_p {
             segments.push(segment.clone());
         }
-        for segment in c_p {
+        for segment in contain_p {
             segments.push(segment.clone());
         }
         segments.sort_by(|a, b| {
-            let a_target_x = a.target().x();
-            let b_target_x = b.target().x();
-            if a_target_x < b_target_x {
+            let a_value = self.calculate_segment_value(a, &event_point);
+            let b_value = self.calculate_segment_value(b, &event_point);
+            if a_value.equals(b_value) {
+                let a_target_y = a.target().y();
+                let b_target_y = b.target().y();
+                if a_target_y.equals(b_target_y) {
+                    let a_target_x = a.target().x();
+                    let b_target_x = b.target().x();
+                    if a_target_x < b_target_x {
+                        return std::cmp::Ordering::Greater;
+                    } else {
+                        return std::cmp::Ordering::Less;
+                    }
+                } else if a_target_y < b_target_y {
+                    return std::cmp::Ordering::Less;
+                } else {
+                    return std::cmp::Ordering::Greater;
+                }
+            }
+            if a_value < b_value {
                 return std::cmp::Ordering::Less;
             } else {
                 return std::cmp::Ordering::Greater;
@@ -292,23 +332,23 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
     ) {
         let points = segment_2_segment_2_intersection(s1, s2);
         for point in points {
-            if point.y() < event_point.y()
-                || (point.y().equals(event_point.y()) && point.x() > event_point.x())
+            if point.x() > event_point.x()
+                || (point.x().equals(event_point.x()) && point.y() > event_point.y())
             {
                 self.event_queue.push(point)
             }
         }
     }
 
-    fn calculate_segment_value(&self, segment: &Segment2<T>, y: T) -> T {
+    fn calculate_segment_value(&self, segment: &Segment2<T>, point: &Point2<T>) -> T {
         let source = segment.source();
         let target = segment.target();
-        if source.y().equals(target.y()) {
-            return target.x();
+        if source.x().equals(target.x()) {
+            return point.y();
         }
-        let x =
-            source.x() + (y - source.y()) * (target.x() - source.x()) / (target.y() - source.y());
-        x
+        let y = source.y()
+            + (point.x() - source.x()) * (target.y() - source.y()) / (target.x() - source.x());
+        y
     }
 }
 
@@ -325,12 +365,31 @@ impl<T: NumberType> Ord for StatusNode<T> {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         let self_value = self.value;
         let other_value = other.value;
+        if self.value.equals(other.value) {
+            let source = self.segment.source();
+            let target = self.segment.target();
+            let other_source = other.segment.source();
+            let other_target = other.segment.target();
+            if source.equals(&other_source) && target.equals(&other_target) {
+                return std::cmp::Ordering::Equal;
+            } else {
+                if target.y().equals(other_target.y()) {
+                    if target.x() < other_target.x() {
+                        return std::cmp::Ordering::Greater;
+                    } else {
+                        return std::cmp::Ordering::Less;
+                    }
+                } else if target.y() < other_target.y() {
+                    return std::cmp::Ordering::Less;
+                } else {
+                    return std::cmp::Ordering::Greater;
+                }
+            }
+        }
         if self_value < other_value {
             return std::cmp::Ordering::Less;
-        } else if self_value > other_value {
-            return std::cmp::Ordering::Greater;
         } else {
-            return std::cmp::Ordering::Equal;
+            return std::cmp::Ordering::Greater;
         }
     }
 }
@@ -347,19 +406,26 @@ mod tests {
 
     #[test]
     fn test_sweep_line_segment_2_intersection() {
-        // let segment1 = Segment2::new(Point2::new(10.0, 10.0), Point2::new(0.0, 0.0));
-        // let segment2 = Segment2::new(Point2::new(0.0, 10.0), Point2::new(10.0, 0.0));
-        // let segment3 = Segment2::new(Point2::new(0.0, 5.0), Point2::new(8.0, 8.0));
-        // let segment1 = Segment2::new(Point2::new(10.0, 10.0), Point2::new(0.0, 10.0));
-        // let segment2 = Segment2::new(Point2::new(0.0, 5.0), Point2::new(5.0, 10.0));
-        // let segment3 = Segment2::new(Point2::new(3.0, 0.0), Point2::new(3.0, 15.0));
-        let segment1 = Segment2::new(Point2::new(0.0, 10.0), Point2::new(10.0, 0.0));
-        let segment2 = Segment2::new(Point2::new(5.0, 10.0), Point2::new(5.0, 8.0));
-        let segment3 = Segment2::new(Point2::new(10.0, 9.0), Point2::new(0.0, 0.0));
-        let segments = vec![segment1, segment2, segment3];
+        let segment1 = Segment2::new(Point2::new(10.0, 10.0), Point2::new(0.0, 10.0));
+        let segment2 = Segment2::new(Point2::new(0.0, 5.0), Point2::new(5.0, 10.0));
+        let segment3 = Segment2::new(Point2::new(3.0, 0.0), Point2::new(3.0, 15.0));
+        let segment4 = Segment2::new(Point2::new(3.0, 8.0), Point2::new(10.0, 10.0));
+        let segment5 = Segment2::new(Point2::new(3.0, 12.0), Point2::new(5.0, 0.0));
+        let segments = vec![segment1, segment2, segment3, segment4, segment5];
         let mut sweep_line = SweepLineSegment2Intersection::new(&segments);
         let result = sweep_line.intersection();
-        println!("{:?}", result);
-        // assert_eq!(result.len(), 0);
+        assert_eq!(
+            result,
+            vec![
+                Point2::new(10.0, 10.0),
+                Point2::new(5.0, 10.0),
+                Point2::new(3.636363636363636, 8.181818181818182),
+                Point2::new(3.571428571428571, 8.571428571428571),
+                Point2::new(3.3333333333333335, 10.0),
+                Point2::new(3.0, 12.0),
+                Point2::new(3.0, 10.0),
+                Point2::new(3.0, 8.0),
+            ]
+        );
     }
 }
