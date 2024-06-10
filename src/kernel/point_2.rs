@@ -67,14 +67,14 @@ impl<T: NumberType> Ord for Point2<T> {
         if self.equals(other) {
             return std::cmp::Ordering::Equal;
         }
-        if self.y > other.y {
+        if self.x() < other.x() {
             return std::cmp::Ordering::Greater;
-        } else if self.y < other.y {
+        } else if self.x() > other.x() {
             return std::cmp::Ordering::Less;
         } else {
-            if self.x > other.x {
+            if self.y() > other.y() {
                 return std::cmp::Ordering::Less;
-            } else if self.x < other.x {
+            } else if self.y() < other.y() {
                 return std::cmp::Ordering::Greater;
             } else {
                 return std::cmp::Ordering::Equal;

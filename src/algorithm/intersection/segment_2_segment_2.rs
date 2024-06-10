@@ -100,8 +100,8 @@ mod tests {
         let s2 = Segment2::new(p1, p2);
         let result = segment_2_segment_2_intersection(&s1, &s2);
         assert_eq!(result.len(), 2);
-        assert_eq!(result[0], Point2::new(1.0, 1.0));
-        assert_eq!(result[1], Point2::new(1.0, 2.0));
+        assert_eq!(result[0], Point2::new(1.0, 2.0));
+        assert_eq!(result[1], Point2::new(1.0, 1.0));
 
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
