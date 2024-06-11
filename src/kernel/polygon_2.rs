@@ -21,12 +21,12 @@ impl<T: NumberType> Polygon2<T> {
         Self { vertices, edges }
     }
 
-    pub fn vertices(&self) -> &Vec<Point2<T>> {
-        &self.vertices
+    pub fn vertices(&self) -> Vec<Point2<T>> {
+        self.vertices.clone()
     }
 
-    pub fn edges(&self) -> &Vec<Segment2<T>> {
-        &self.edges
+    pub fn edges(&self) -> Vec<Segment2<T>> {
+        self.edges.clone()
     }
 
     pub fn area(&self) -> T {
@@ -34,7 +34,8 @@ impl<T: NumberType> Polygon2<T> {
     }
 
     pub fn is_simple(&self) -> bool {
-        let mut sweep = SweepLineSegment2Intersection::new(self.edges());
+        let edges = self.edges();
+        let mut sweep = SweepLineSegment2Intersection::new(&edges);
         let intersections = sweep.intersection();
         let vertices_size = self.vertices.len();
         if vertices_size == intersections.len() {
