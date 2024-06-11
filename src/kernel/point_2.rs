@@ -8,6 +8,13 @@ pub struct Point2<T: NumberType> {
     y: T,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Point2Turn {
+    Left,
+    Right,
+    Collinear,
+}
+
 impl<T: NumberType> Point2<T> {
     pub fn new(x: T, y: T) -> Self {
         Self { x, y }
@@ -35,6 +42,19 @@ impl<T: NumberType> Point2<T> {
         let dx = self.x - other.x;
         let dy = self.y - other.y;
         (dx * dx + dy * dy).sqrt()
+    }
+
+    pub fn turn(p: &Self, q: &Self, r: &Self) -> Point2Turn {
+        let pq = Vector2::new(q.x - p.x, q.y - p.y);
+        let qr = Vector2::new(r.x - q.x, r.y - q.y);
+        let cross = pq.cross(&qr);
+        if cross.equals(T::zero()) {
+            return Point2Turn::Collinear;
+        } else if cross > T::zero() {
+            return Point2Turn::Left;
+        } else {
+            return Point2Turn::Right;
+        }
     }
 }
 
