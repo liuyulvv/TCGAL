@@ -1,11 +1,6 @@
 use crate::kernel::{circle_2::Circle2, number_type::NumberType, point_2::Point2};
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
-pub enum Point2Circle2Location {
-    On,
-    Inside,
-    Outside,
-}
+use super::location_enum::Point2Circle2Location;
 
 pub fn is_point_2_on_circle_2<T: NumberType>(point_2: &Point2<T>, circle_2: &Circle2<T>) -> bool {
     let location = locate_point_2_circle_2(point_2, circle_2);

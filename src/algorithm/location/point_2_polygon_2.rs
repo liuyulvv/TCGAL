@@ -1,10 +1,6 @@
 use crate::kernel::{number_type::NumberType, point_2::Point2, polygon_2::Polygon2};
 
-pub enum Point2Polygon2Location {
-    On,
-    Inside,
-    Outside,
-}
+use super::location_enum::Point2Polygon2Location;
 
 pub fn is_point_2_on_polygon_2<T: NumberType>(point: &Point2<T>, polygon: &Polygon2<T>) -> bool {
     let location = locate_point_2_polygon_2(point, polygon);

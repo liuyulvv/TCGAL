@@ -1,12 +1,6 @@
 use crate::kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2};
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
-pub enum Point2Segment2Location {
-    On,
-    Left,
-    Right,
-    Collinear,
-}
+use super::location_enum::Point2Segment2Location;
 
 pub fn is_point_2_on_segment_2<T: NumberType>(
     point_2: &Point2<T>,

@@ -1,10 +1,4 @@
-use super::{number_type::NumberType, point_2::Point2};
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum Orientation {
-    Clockwise,
-    CounterClockwise,
-}
+use super::{number_type::NumberType, point_2::Point2, util_enum::Orientation};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Triangle2<T: NumberType> {

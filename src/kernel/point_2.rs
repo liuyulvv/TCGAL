@@ -1,18 +1,11 @@
 use std::ops::{Add, Sub};
 
-use super::{number_type::NumberType, vector_2::Vector2};
+use super::{number_type::NumberType, util_enum::TurnDirection, vector_2::Vector2};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Point2<T: NumberType> {
     x: T,
     y: T,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Point2Turn {
-    Left,
-    Right,
-    Collinear,
 }
 
 impl<T: NumberType> Point2<T> {
@@ -44,16 +37,16 @@ impl<T: NumberType> Point2<T> {
         (dx * dx + dy * dy).sqrt()
     }
 
-    pub fn turn(p: &Self, q: &Self, r: &Self) -> Point2Turn {
+    pub fn turn(p: &Self, q: &Self, r: &Self) -> TurnDirection {
         let pq = Vector2::new(q.x - p.x, q.y - p.y);
         let qr = Vector2::new(r.x - q.x, r.y - q.y);
         let cross = pq.cross(&qr);
         if cross.equals(T::zero()) {
-            return Point2Turn::Collinear;
+            return TurnDirection::Collinear;
         } else if cross > T::zero() {
-            return Point2Turn::Left;
+            return TurnDirection::Left;
         } else {
-            return Point2Turn::Right;
+            return TurnDirection::Right;
         }
     }
 }

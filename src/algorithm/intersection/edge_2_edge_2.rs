@@ -1,10 +1,6 @@
 use crate::{
     algorithm::intersection::segment_2_segment_2::segment_2_segment_2_intersection,
-    kernel::{
-        edge_2::{Edge2, Edge2Type},
-        number_type::NumberType,
-        vertex_2::Vertex2,
-    },
+    kernel::{edge_2::Edge2, number_type::NumberType, util_enum::Edge2Type, vertex_2::Vertex2},
 };
 
 pub fn edge_2_edge_2_intersection<T: NumberType>(e1: &Edge2<T>, e2: &Edge2<T>) -> Vec<Vertex2<T>> {

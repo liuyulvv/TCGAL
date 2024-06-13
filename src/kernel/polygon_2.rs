@@ -1,9 +1,7 @@
 use crate::algorithm::intersection::sweep_line_segment_2_intersection::SweepLineSegment2Intersection;
 
 use super::{
-    number_type::NumberType,
-    point_2::{Point2, Point2Turn},
-    segment_2::Segment2,
+    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::TurnDirection,
 };
 
 pub struct Polygon2<T: NumberType> {
@@ -46,7 +44,7 @@ impl<T: NumberType> Polygon2<T> {
 
     pub fn is_convex(&self) -> bool {
         let n = self.vertices.len();
-        let mut prev_turn: Option<Point2Turn> = None;
+        let mut prev_turn: Option<TurnDirection> = None;
         for i in 0..n {
             let p = self.vertices[i];
             let q = self.vertices[(i + 1) % n];
@@ -54,11 +52,11 @@ impl<T: NumberType> Polygon2<T> {
             let turn = Point2::turn(&p, &q, &r);
             match prev_turn {
                 None => match turn {
-                    Point2Turn::Collinear => continue,
+                    TurnDirection::Collinear => continue,
                     _ => prev_turn = Some(turn),
                 },
                 Some(prev) => match turn {
-                    Point2Turn::Collinear => continue,
+                    TurnDirection::Collinear => continue,
                     _ => {
                         if prev != turn {
                             return false;
