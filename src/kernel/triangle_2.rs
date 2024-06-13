@@ -1,4 +1,6 @@
-use super::{number_type::NumberType, point_2::Point2, util_enum::Orientation};
+use super::{
+    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Orientation,
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Triangle2<T: NumberType> {
@@ -29,6 +31,18 @@ impl<T: NumberType> Triangle2<T> {
 
     pub fn c(&self) -> Point2<T> {
         self.c.clone()
+    }
+
+    pub fn vertices(&self) -> [Point2<T>; 3] {
+        [self.a.clone(), self.b.clone(), self.c.clone()]
+    }
+
+    pub fn edges(&self) -> [Segment2<T>; 3] {
+        [
+            Segment2::new(self.a.clone(), self.b.clone()),
+            Segment2::new(self.b.clone(), self.c.clone()),
+            Segment2::new(self.c.clone(), self.a.clone()),
+        ]
     }
 
     pub fn orientation(&self) -> Orientation {
@@ -81,5 +95,40 @@ mod tests {
         assert_eq!(triangle.orientation(), Orientation::CounterClockwise);
         triangle.reverse_orientation();
         assert_eq!(triangle.orientation(), Orientation::Clockwise);
+    }
+
+    #[test]
+    fn test_triangle2_vertices() {
+        let a = Point2::new(0.0, 0.0);
+        let b = Point2::new(1.0, 0.0);
+        let c = Point2::new(0.0, 1.0);
+        let triangle = Triangle2::new(a.clone(), b.clone(), c.clone());
+        assert_eq!(triangle.vertices(), [a, b, c]);
+    }
+
+    #[test]
+    fn test_triangle2_edges() {
+        let a = Point2::new(0.0, 0.0);
+        let b = Point2::new(1.0, 0.0);
+        let c = Point2::new(0.0, 1.0);
+        let triangle = Triangle2::new(a.clone(), b.clone(), c.clone());
+        assert_eq!(
+            triangle.edges(),
+            [
+                Segment2::new(a.clone(), b.clone()),
+                Segment2::new(b.clone(), c.clone()),
+                Segment2::new(c.clone(), a.clone())
+            ]
+        );
+
+        let triangle = Triangle2::new(a.clone(), c.clone(), b.clone());
+        assert_eq!(
+            triangle.edges(),
+            [
+                Segment2::new(a.clone(), c.clone()),
+                Segment2::new(c.clone(), b.clone()),
+                Segment2::new(b.clone(), a.clone())
+            ]
+        );
     }
 }
