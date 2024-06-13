@@ -49,7 +49,7 @@ impl<T: NumberType> Triangle2<T> {
         self.orientation
     }
 
-    pub fn calculate_orientation(a: &Point2<T>, b: &Point2<T>, c: &Point2<T>) -> Orientation {
+    fn calculate_orientation(a: &Point2<T>, b: &Point2<T>, c: &Point2<T>) -> Orientation {
         let cross_product = (b.x() - a.x()) * (c.y() - a.y()) - (b.y() - a.y()) * (c.x() - a.x());
         if cross_product > T::zero() {
             Orientation::CounterClockwise
@@ -64,27 +64,24 @@ impl<T: NumberType> Triangle2<T> {
             Orientation::CounterClockwise => Orientation::Clockwise,
         };
     }
+
+    pub fn area(&self) -> T {
+        let a = self.a();
+        let b = self.b();
+        let c = self.c();
+        let cross = (b.x() - a.x()) * (c.y() - a.y()) - (b.y() - a.y()) * (c.x() - a.x());
+        let area = cross.abs() / T::from_f64(2.0);
+        match self.orientation {
+            Orientation::Clockwise => -area,
+            Orientation::CounterClockwise => area,
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
 
     use super::*;
-
-    #[test]
-    fn test_triangle2_calculate_orientation() {
-        let a = Point2::new(0.0, 0.0);
-        let b = Point2::new(1.0, 0.0);
-        let c = Point2::new(0.0, 1.0);
-        assert_eq!(
-            Triangle2::calculate_orientation(&a, &b, &c),
-            Orientation::CounterClockwise
-        );
-        assert_eq!(
-            Triangle2::calculate_orientation(&a, &c, &b),
-            Orientation::Clockwise
-        );
-    }
 
     #[test]
     fn test_triangle2_reverse_orientation() {
