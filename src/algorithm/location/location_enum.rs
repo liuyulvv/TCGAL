@@ -26,3 +26,11 @@ pub enum Point2Triangle2Location {
     Inside,
     Outside,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Point2Ray2Location {
+    On,
+    Left,
+    Right,
+    Collinear,
+}
