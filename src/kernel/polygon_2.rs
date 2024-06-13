@@ -1,7 +1,8 @@
 use crate::algorithm::intersection::sweep_line_segment_2_intersection::SweepLineSegment2Intersection;
 
 use super::{
-    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::TurnDirection,
+    number_type::NumberType, point_2::Point2, segment_2::Segment2, triangle_2::Triangle2,
+    util_enum::TurnDirection,
 };
 
 pub struct Polygon2<T: NumberType> {
@@ -28,7 +29,18 @@ impl<T: NumberType> Polygon2<T> {
     }
 
     pub fn area(&self) -> T {
-        todo!()
+        if self.vertices.len() < 3 {
+            return T::zero();
+        }
+        let p = self.vertices[0];
+        let mut area = T::zero();
+        for i in 1..self.vertices.len() - 1 {
+            let q = self.vertices[(i) % self.vertices.len()];
+            let r = self.vertices[(i + 1) % self.vertices.len()];
+            let triangle = Triangle2::new(p, q, r);
+            area = area + triangle.area();
+        }
+        return area;
     }
 
     pub fn is_simple(&self) -> bool {
@@ -83,6 +95,7 @@ mod tests {
         let polygon = Polygon2::new(vec![p1, p2, p3, p4]);
         assert_eq!(polygon.is_simple(), true);
         assert_eq!(polygon.is_convex(), true);
+        assert_eq!(polygon.area(), 100.0);
 
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
@@ -91,6 +104,7 @@ mod tests {
         let polygon = Polygon2::new(vec![p1, p2, p3, p4]);
         assert_eq!(polygon.is_simple(), false);
         assert_eq!(polygon.is_convex(), false);
+        assert_eq!(polygon.area(), 0.0);
 
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
