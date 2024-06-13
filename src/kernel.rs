@@ -8,5 +8,6 @@ pub mod point_2;
 pub mod polygon_2;
 pub mod ray_2;
 pub mod segment_2;
+pub mod triangle_2;
 pub mod vector_2;
 pub mod vertex_2;
