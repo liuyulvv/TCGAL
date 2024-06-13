@@ -1,29 +1,16 @@
 use crate::kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2};
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
-pub enum Point2Segment2Location {
-    On,
-    Left,
-    Right,
-    Collinear,
-}
+use super::location_enum::Point2Segment2Location;
 
 pub fn is_point_2_on_segment_2<T: NumberType>(
     point_2: &Point2<T>,
     segment_2: &Segment2<T>,
 ) -> bool {
-    let source = segment_2.source();
-    let target = segment_2.target();
-    let vec_ab = target - source;
-    let vec_ac = *point_2 - source;
-    let vec_bc = *point_2 - target;
-    let dot_ab_ac = vec_ab.dot(&vec_ac);
-    let dot_ab_ab = vec_ab.dot(&vec_ab);
-    let eps = T::default_eps();
-    vec_ab.cross(&vec_ac).abs() < eps
-        && vec_ab.cross(&vec_bc).abs() < eps
-        && dot_ab_ac >= -eps
-        && dot_ab_ac <= dot_ab_ab
+    let location = locate_point_2_segment_2(point_2, segment_2);
+    match location {
+        Point2Segment2Location::On => true,
+        _ => false,
+    }
 }
 
 pub fn locate_point_2_segment_2<T: NumberType>(

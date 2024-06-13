@@ -12,11 +12,11 @@ impl<T: NumberType> Segment2<T> {
     }
 
     pub fn source(&self) -> Point2<T> {
-        Point2::new(self.source.x(), self.source.y())
+        self.source.clone()
     }
 
     pub fn target(&self) -> Point2<T> {
-        Point2::new(self.target.x(), self.target.y())
+        self.target.clone()
     }
 }
 

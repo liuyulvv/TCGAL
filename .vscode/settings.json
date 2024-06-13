@@ -3,6 +3,7 @@
         "CGAL",
         "consts",
         "DCEL",
+        "earcut",
         "Hasher",
         "powi",
         "RCGAL",

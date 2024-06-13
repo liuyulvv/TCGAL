@@ -1,6 +1,8 @@
 use crate::{
     algorithm::{
-        location::point_2_circle_2::{locate_point_2_circle_2, Point2Circle2Location},
+        location::{
+            location_enum::Point2Circle2Location, point_2_circle_2::locate_point_2_circle_2,
+        },
         projection::point_2_segment_2::point_2_project_segment_2,
     },
     kernel::{circle_2::Circle2, number_type::NumberType, point_2::Point2, segment_2::Segment2},

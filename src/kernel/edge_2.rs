@@ -1,14 +1,9 @@
 use std::{cell::RefCell, rc::Rc};
 
 use super::{
-    arc_2::Arc2, face_2::Face2, number_type::NumberType, segment_2::Segment2, vertex_2::Vertex2,
+    arc_2::Arc2, face_2::Face2, number_type::NumberType, segment_2::Segment2, util_enum::Edge2Type,
+    vertex_2::Vertex2,
 };
-
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum Edge2Type {
-    Segment,
-    Arc,
-}
 
 #[derive(Debug, Clone)]
 pub struct Edge2<T: NumberType> {
