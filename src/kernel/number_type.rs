@@ -26,6 +26,8 @@ pub trait NumberType:
     fn equals(self, other: Self) -> bool;
     fn sqrt(self) -> Self;
     fn abs(self) -> Self;
+    fn sin(self) -> Self;
+    fn cos(self) -> Self;
 }
 
 impl DefaultNumberValueTrait for f32 {
@@ -85,6 +87,14 @@ impl NumberType for f32 {
         let abs_diff = (self - other).abs();
         abs_diff < Self::default_eps()
     }
+
+    fn sin(self) -> Self {
+        self.sin()
+    }
+
+    fn cos(self) -> Self {
+        self.cos()
+    }
 }
 
 impl NumberType for f64 {
@@ -99,5 +109,13 @@ impl NumberType for f64 {
     fn equals(self, other: Self) -> bool {
         let abs_diff = (self - other).abs();
         abs_diff < Self::default_eps()
+    }
+
+    fn sin(self) -> Self {
+        self.sin()
+    }
+
+    fn cos(self) -> Self {
+        self.cos()
     }
 }
