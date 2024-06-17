@@ -8,6 +8,7 @@ pub trait DefaultNumberValueTrait {
     fn default_eps() -> Self;
     fn zero() -> Self;
     fn from_f64(value: f64) -> Self;
+    fn pi() -> Self;
 }
 
 pub trait NumberType:
@@ -43,6 +44,10 @@ impl DefaultNumberValueTrait for f32 {
     fn from_f64(value: f64) -> Self {
         value as f32
     }
+
+    fn pi() -> Self {
+        std::f32::consts::PI
+    }
 }
 
 impl DefaultNumberValueTrait for f64 {
@@ -60,6 +65,10 @@ impl DefaultNumberValueTrait for f64 {
 
     fn from_f64(value: f64) -> Self {
         value
+    }
+
+    fn pi() -> Self {
+        std::f64::consts::PI
     }
 }
 
