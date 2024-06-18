@@ -1,6 +1,9 @@
 use super::{
-    circle_segment_2::CircleSegment2, number_type::NumberType, point_2::Point2,
-    util_enum::Orientation,
+    circle_segment_2::CircleSegment2,
+    number_type::NumberType,
+    point_2::Point2,
+    segment_2::Segment2,
+    util_enum::{Orientation, Segment2Type},
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -39,41 +42,6 @@ impl<T: NumberType> ArcSegment2<T> {
         }
     }
 
-    pub fn center(&self) -> Point2<T> {
-        self.support.center()
-    }
-
-    pub fn radius(&self) -> T {
-        self.support.radius()
-    }
-
-    pub fn source(&self) -> Point2<T> {
-        let center = self.center();
-        let radius = self.radius();
-        let x = center.x() + radius * self.source_radian.cos();
-        let y = center.y() + radius * self.source_radian.sin();
-        Point2::new(x, y)
-    }
-
-    pub fn target(&self) -> Point2<T> {
-        let center = self.center();
-        let radius = self.radius();
-        let x = center.x() + radius * self.target_radian.cos();
-        let y = center.y() + radius * self.target_radian.sin();
-        Point2::new(x, y)
-    }
-
-    pub fn orientation(&self) -> Orientation {
-        self.orientation
-    }
-
-    pub fn reverse_orientation(&mut self) {
-        self.orientation = match self.orientation {
-            Orientation::Clockwise => Orientation::CounterClockwise,
-            Orientation::CounterClockwise => Orientation::Clockwise,
-        };
-    }
-
     pub fn monotone(&self) -> Vec<ArcSegment2<T>> {
         let mut arcs = Vec::new();
         let pi = T::pi();
@@ -104,6 +72,47 @@ impl<T: NumberType> ArcSegment2<T> {
             }
         }
         arcs
+    }
+}
+
+impl<T: NumberType> Segment2<T> for ArcSegment2<T> {
+    fn segment_type(&self) -> Segment2Type {
+        Segment2Type::ArcSegment2
+    }
+
+    fn source(&self) -> Point2<T> {
+        let center = self.center();
+        let radius = self.radius();
+        let x = center.x() + radius * self.source_radian.cos();
+        let y = center.y() + radius * self.source_radian.sin();
+        Point2::new(x, y)
+    }
+
+    fn target(&self) -> Point2<T> {
+        let center = self.center();
+        let radius = self.radius();
+        let x = center.x() + radius * self.target_radian.cos();
+        let y = center.y() + radius * self.target_radian.sin();
+        Point2::new(x, y)
+    }
+
+    fn center(&self) -> Point2<T> {
+        self.support.center()
+    }
+
+    fn radius(&self) -> T {
+        self.support.radius()
+    }
+
+    fn orientation(&self) -> Orientation {
+        self.orientation
+    }
+
+    fn reverse_orientation(&mut self) {
+        self.orientation = match self.orientation {
+            Orientation::Clockwise => Orientation::CounterClockwise,
+            Orientation::CounterClockwise => Orientation::Clockwise,
+        };
     }
 }
 

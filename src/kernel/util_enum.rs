@@ -16,3 +16,10 @@ pub enum Edge2Type {
     Segment,
     Arc,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Segment2Type {
+    LineSegment2,
+    CircleSegment2,
+    ArcSegment2,
+}
