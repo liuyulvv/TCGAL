@@ -6,15 +6,12 @@ use crate::{
         },
         projection::point_2_line_segment_2::point_2_project_line_segment_2,
     },
-    kernel::{
-        circle_segment_2::CircleSegment2, line_segment_2::LineSegment2, number_type::NumberType,
-        point_2::Point2, segment_2::Segment2,
-    },
+    kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2},
 };
 
 pub fn is_line_segment_2_circle_segment_2_intersected<T: NumberType>(
-    line_segment: &LineSegment2<T>,
-    circle_segment: &CircleSegment2<T>,
+    line_segment: &impl Segment2<T>,
+    circle_segment: &impl Segment2<T>,
 ) -> bool {
     let source = line_segment.source();
     let target = line_segment.target();
@@ -30,7 +27,7 @@ pub fn is_line_segment_2_circle_segment_2_intersected<T: NumberType>(
     {
         return true;
     } else {
-        let projection_point = point_2_project_line_segment_2(&center, &line_segment);
+        let projection_point = point_2_project_line_segment_2(&center, line_segment);
         match projection_point {
             Some(projection_point) => {
                 let projection_relation =
@@ -51,8 +48,8 @@ pub fn is_line_segment_2_circle_segment_2_intersected<T: NumberType>(
 }
 
 pub fn line_segment_2_circle_segment_2_intersection<T: NumberType>(
-    line_segment: &LineSegment2<T>,
-    circle_segment: &CircleSegment2<T>,
+    line_segment: &impl Segment2<T>,
+    circle_segment: &impl Segment2<T>,
 ) -> Vec<Point2<T>> {
     let mut result = Vec::new();
     let source = line_segment.source();
@@ -94,7 +91,7 @@ pub fn line_segment_2_circle_segment_2_intersection<T: NumberType>(
             result.push(Point2::new(projection_point.x(), projection_point.y()));
             return result;
         } else {
-            let projection_point = point_2_project_line_segment_2(&center, &line_segment);
+            let projection_point = point_2_project_line_segment_2(&center, line_segment);
             match projection_point {
                 Some(projection_point) => {
                     let projection_relation =
@@ -133,7 +130,9 @@ pub fn line_segment_2_circle_segment_2_intersection<T: NumberType>(
 #[cfg(test)]
 mod tests {
 
-    use crate::kernel::point_2::Point2;
+    use crate::kernel::{
+        circle_segment_2::CircleSegment2, line_segment_2::LineSegment2, point_2::Point2,
+    };
 
     use super::*;
 

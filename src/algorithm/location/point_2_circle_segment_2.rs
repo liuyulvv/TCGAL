@@ -17,7 +17,7 @@ pub fn is_point_2_on_circle_segment_2<T: NumberType>(
 
 pub fn locate_point_2_circle_segment_2<T: NumberType>(
     point_2: &Point2<T>,
-    circle_2: &CircleSegment2<T>,
+    circle_2: &impl Segment2<T>,
 ) -> Point2Circle2Location {
     let center = circle_2.center();
     let radius = circle_2.radius();

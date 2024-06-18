@@ -1,10 +1,8 @@
-use crate::kernel::{
-    line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, segment_2::Segment2,
-};
+use crate::kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2};
 
 pub fn point_2_project_line_segment_2<T: NumberType>(
     point: &Point2<T>,
-    segment: &LineSegment2<T>,
+    segment: &impl Segment2<T>,
 ) -> Option<Point2<T>> {
     let v = segment.target() - segment.source();
     let w = *point - segment.source();
@@ -23,6 +21,8 @@ pub fn point_2_project_line_segment_2<T: NumberType>(
 
 #[cfg(test)]
 mod tests {
+    use crate::kernel::line_segment_2::LineSegment2;
+
     use super::*;
 
     #[test]

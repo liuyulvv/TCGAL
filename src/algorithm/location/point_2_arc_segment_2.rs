@@ -1,13 +1,12 @@
 use crate::kernel::{
-    arc_segment_2::ArcSegment2, number_type::NumberType, point_2::Point2, segment_2::Segment2,
-    util_enum::Orientation,
+    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Orientation,
 };
 
 use super::location_enum::Point2ArcSegment2Location;
 
 pub fn locate_point_2_arc_segment_2<T: NumberType>(
     point: &Point2<T>,
-    arc_segment: &ArcSegment2<T>,
+    arc_segment: &impl Segment2<T>,
 ) -> Point2ArcSegment2Location {
     let center = arc_segment.center();
     let radius = arc_segment.radius();
