@@ -34,3 +34,10 @@ pub enum Point2Ray2Location {
     Right,
     Collinear,
 }
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Point2ArcSegment2Location {
+    On,
+    Left,
+    Right,
+}
