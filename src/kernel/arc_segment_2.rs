@@ -1,15 +1,18 @@
-use super::{circle_2::Circle2, number_type::NumberType, point_2::Point2, util_enum::Orientation};
+use super::{
+    circle_segment_2::CircleSegment2, number_type::NumberType, point_2::Point2,
+    util_enum::Orientation,
+};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Arc2<T: NumberType> {
-    support: Circle2<T>,
+pub struct ArcSegment2<T: NumberType> {
+    support: CircleSegment2<T>,
     source_radian: T,
     target_radian: T,
     orientation: Orientation,
 }
 
-impl<T: NumberType> Arc2<T> {
-    pub fn new(support: Circle2<T>, source_radian: T, target_radian: T) -> Self {
+impl<T: NumberType> ArcSegment2<T> {
+    pub fn new(support: CircleSegment2<T>, source_radian: T, target_radian: T) -> Self {
         let mut source_radian = source_radian;
         let mut target_radian = target_radian;
         let pi = T::pi();
@@ -71,16 +74,16 @@ impl<T: NumberType> Arc2<T> {
         };
     }
 
-    pub fn monotone(&self) -> Vec<Arc2<T>> {
+    pub fn monotone(&self) -> Vec<ArcSegment2<T>> {
         let mut arcs = Vec::new();
         let pi = T::pi();
         match self.orientation {
             Orientation::CounterClockwise => {
                 if self.target_radian > pi && self.source_radian < pi {
-                    arcs.push(Arc2::new(self.support, self.source_radian, pi));
-                    arcs.push(Arc2::new(self.support, pi, self.target_radian));
+                    arcs.push(ArcSegment2::new(self.support, self.source_radian, pi));
+                    arcs.push(ArcSegment2::new(self.support, pi, self.target_radian));
                 } else {
-                    arcs.push(Arc2::new(
+                    arcs.push(ArcSegment2::new(
                         self.support,
                         self.source_radian,
                         self.target_radian,
@@ -89,10 +92,10 @@ impl<T: NumberType> Arc2<T> {
             }
             Orientation::Clockwise => {
                 if self.source_radian > pi && self.target_radian < pi {
-                    arcs.push(Arc2::new(self.support, pi, self.target_radian));
-                    arcs.push(Arc2::new(self.support, self.source_radian, pi));
+                    arcs.push(ArcSegment2::new(self.support, pi, self.target_radian));
+                    arcs.push(ArcSegment2::new(self.support, self.source_radian, pi));
                 } else {
-                    arcs.push(Arc2::new(
+                    arcs.push(ArcSegment2::new(
                         self.support,
                         self.target_radian,
                         self.source_radian,
@@ -104,7 +107,7 @@ impl<T: NumberType> Arc2<T> {
     }
 }
 
-impl<T: NumberType> PartialEq for Arc2<T> {
+impl<T: NumberType> PartialEq for ArcSegment2<T> {
     fn eq(&self, other: &Self) -> bool {
         self.center() == other.center()
             && self.radius() == other.radius()

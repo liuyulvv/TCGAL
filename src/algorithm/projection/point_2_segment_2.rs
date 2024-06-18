@@ -1,8 +1,8 @@
-use crate::kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2};
+use crate::kernel::{line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2};
 
 pub fn point_2_project_segment_2<T: NumberType>(
     point: &Point2<T>,
-    segment: &Segment2<T>,
+    segment: &LineSegment2<T>,
 ) -> Option<Point2<T>> {
     let v = segment.target() - segment.source();
     let w = *point - segment.source();
@@ -26,22 +26,22 @@ mod tests {
     #[test]
     fn test_point_2_project_segment_2() {
         let point_2 = Point2::new(0.0, 0.0);
-        let segment_2 = Segment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
+        let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
         let result = point_2_project_segment_2(&point_2, &segment_2);
         assert_eq!(result, Some(Point2::new(0.0, 0.0)));
 
         let point_2 = Point2::new(1.0, 1.0);
-        let segment_2 = Segment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
+        let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
         let result = point_2_project_segment_2(&point_2, &segment_2);
         assert_eq!(result, Some(Point2::new(1.0, 1.0)));
 
         let point_2 = Point2::new(0.0, 2.0);
-        let segment_2 = Segment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
+        let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
         let result = point_2_project_segment_2(&point_2, &segment_2);
         assert_eq!(result, Some(Point2::new(1.0, 1.0)));
 
         let point_2 = Point2::new(0.0, -2.0);
-        let segment_2 = Segment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
+        let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(10.0, 10.0));
         let result = point_2_project_segment_2(&point_2, &segment_2);
         assert_eq!(result, None);
     }

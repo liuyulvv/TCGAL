@@ -1,5 +1,5 @@
 use super::{
-    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Orientation,
+    line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, util_enum::Orientation,
 };
 
 #[derive(Clone, Debug, PartialEq)]
@@ -37,11 +37,11 @@ impl<T: NumberType> Triangle2<T> {
         [self.a.clone(), self.b.clone(), self.c.clone()]
     }
 
-    pub fn edges(&self) -> [Segment2<T>; 3] {
+    pub fn edges(&self) -> [LineSegment2<T>; 3] {
         [
-            Segment2::new(self.a.clone(), self.b.clone()),
-            Segment2::new(self.b.clone(), self.c.clone()),
-            Segment2::new(self.c.clone(), self.a.clone()),
+            LineSegment2::new(self.a.clone(), self.b.clone()),
+            LineSegment2::new(self.b.clone(), self.c.clone()),
+            LineSegment2::new(self.c.clone(), self.a.clone()),
         ]
     }
 
@@ -112,9 +112,9 @@ mod tests {
         assert_eq!(
             triangle.edges(),
             [
-                Segment2::new(a.clone(), b.clone()),
-                Segment2::new(b.clone(), c.clone()),
-                Segment2::new(c.clone(), a.clone())
+                LineSegment2::new(a.clone(), b.clone()),
+                LineSegment2::new(b.clone(), c.clone()),
+                LineSegment2::new(c.clone(), a.clone())
             ]
         );
 
@@ -122,9 +122,9 @@ mod tests {
         assert_eq!(
             triangle.edges(),
             [
-                Segment2::new(a.clone(), c.clone()),
-                Segment2::new(c.clone(), b.clone()),
-                Segment2::new(b.clone(), a.clone())
+                LineSegment2::new(a.clone(), c.clone()),
+                LineSegment2::new(c.clone(), b.clone()),
+                LineSegment2::new(b.clone(), a.clone())
             ]
         );
     }

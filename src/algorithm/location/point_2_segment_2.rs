@@ -1,10 +1,10 @@
-use crate::kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2};
+use crate::kernel::{line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2};
 
 use super::location_enum::Point2Segment2Location;
 
 pub fn is_point_2_on_segment_2<T: NumberType>(
     point_2: &Point2<T>,
-    segment_2: &Segment2<T>,
+    segment_2: &LineSegment2<T>,
 ) -> bool {
     let location = locate_point_2_segment_2(point_2, segment_2);
     match location {
@@ -15,7 +15,7 @@ pub fn is_point_2_on_segment_2<T: NumberType>(
 
 pub fn locate_point_2_segment_2<T: NumberType>(
     point_2: &Point2<T>,
-    segment_2: &Segment2<T>,
+    segment_2: &LineSegment2<T>,
 ) -> Point2Segment2Location {
     let source = segment_2.source();
     let target = segment_2.target();
@@ -46,13 +46,13 @@ mod tests {
     fn test_is_point_2_on_segment_2() {
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
-        let s = Segment2::new(p1, p2);
+        let s = LineSegment2::new(p1, p2);
 
         assert_eq!(is_point_2_on_segment_2(&p1, &s), true);
 
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
-        let s = Segment2::new(p1, p2);
+        let s = LineSegment2::new(p1, p2);
 
         let p3 = Point2::new(5.0, 5.0);
         assert_eq!(is_point_2_on_segment_2(&p3, &s), true);
@@ -68,7 +68,7 @@ mod tests {
     fn test_locate_point_2_segment_2() {
         let p1 = Point2::new(0.0, 0.0);
         let p2 = Point2::new(10.0, 10.0);
-        let s = Segment2::new(p1, p2);
+        let s = LineSegment2::new(p1, p2);
 
         let p3 = Point2::new(5.0, 5.0);
         assert_eq!(

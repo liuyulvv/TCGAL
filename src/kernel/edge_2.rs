@@ -1,8 +1,8 @@
 use std::{cell::RefCell, rc::Rc};
 
 use super::{
-    arc_2::Arc2, face_2::Face2, number_type::NumberType, segment_2::Segment2, util_enum::Edge2Type,
-    vertex_2::Vertex2,
+    arc_segment_2::ArcSegment2, face_2::Face2, line_segment_2::LineSegment2,
+    number_type::NumberType, util_enum::Edge2Type, vertex_2::Vertex2,
 };
 
 #[derive(Debug, Clone)]
@@ -93,13 +93,13 @@ impl<T: NumberType> Edge2<T> {
         self.edge_type
     }
 
-    pub fn to_segment(&self) -> Segment2<T> {
+    pub fn to_segment(&self) -> LineSegment2<T> {
         let source = self.source.borrow();
         let target = self.target.borrow();
-        Segment2::new(source.to_point(), target.to_point())
+        LineSegment2::new(source.to_point(), target.to_point())
     }
 
-    pub fn to_arc(&self) -> Arc2<T> {
+    pub fn to_arc(&self) -> ArcSegment2<T> {
         todo!()
     }
 }

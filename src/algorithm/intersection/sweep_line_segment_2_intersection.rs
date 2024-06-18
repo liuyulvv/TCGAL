@@ -7,17 +7,17 @@ use crate::{
         avl_tree::{AVLTree, AVLTreeOption},
         priority_queue::PriorityQueue,
     },
-    kernel::{number_type::NumberType, point_2::Point2, segment_2::Segment2},
+    kernel::{line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2},
 };
 
 #[derive(Debug, Clone, Copy)]
 struct StatusNode<T: NumberType> {
     value: T,
-    segment: Segment2<T>,
+    segment: LineSegment2<T>,
 }
 
 pub struct SweepLineSegment2Intersection<T: NumberType> {
-    segments: Vec<Segment2<T>>,
+    segments: Vec<LineSegment2<T>>,
     event_queue: PriorityQueue<Point2<T>>,
     status_tree: AVLTree<StatusNode<T>>,
     intersection_points: AVLTree<Point2<T>>,
@@ -25,7 +25,7 @@ pub struct SweepLineSegment2Intersection<T: NumberType> {
 }
 
 impl<T: NumberType> SweepLineSegment2Intersection<T> {
-    pub fn new(input_segments: &Vec<Segment2<T>>) -> Self {
+    pub fn new(input_segments: &Vec<LineSegment2<T>>) -> Self {
         let mut event_queue = PriorityQueue::new();
         let mut segments = Vec::new();
         let status_tree: AVLTree<StatusNode<T>> = AVLTree::new(AVLTreeOption::SameNodeInsertRight);
@@ -34,9 +34,9 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
             let source = segment.source();
             let target = segment.target();
             if source > target {
-                segments.push(Segment2::new(source, target));
+                segments.push(LineSegment2::new(source, target));
             } else {
-                segments.push(Segment2::new(target, source));
+                segments.push(LineSegment2::new(target, source));
             }
         }
         for segment in &segments {
@@ -177,7 +177,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         }
     }
 
-    fn get_segment_with_source(&self, source: &Point2<T>) -> Vec<Segment2<T>> {
+    fn get_segment_with_source(&self, source: &Point2<T>) -> Vec<LineSegment2<T>> {
         let mut result = Vec::new();
         for segment in &self.segments {
             if segment.source().equals(source) {
@@ -187,7 +187,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         result
     }
 
-    fn get_active_segment_with_target(&self, target: &Point2<T>) -> Vec<Segment2<T>> {
+    fn get_active_segment_with_target(&self, target: &Point2<T>) -> Vec<LineSegment2<T>> {
         let mut result = Vec::new();
         let status_nodes = self.status_tree.mid_order_traversal();
         for status_node in status_nodes {
@@ -198,7 +198,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         result
     }
 
-    fn get_active_segment_containing_point(&self, point: &Point2<T>) -> Vec<Segment2<T>> {
+    fn get_active_segment_containing_point(&self, point: &Point2<T>) -> Vec<LineSegment2<T>> {
         let mut result = Vec::new();
         let status_nodes = self.status_tree.mid_order_traversal();
         for status_node in status_nodes {
@@ -214,7 +214,10 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         result
     }
 
-    fn get_neighbors_with_point(&self, point: &Point2<T>) -> Option<(Segment2<T>, Segment2<T>)> {
+    fn get_neighbors_with_point(
+        &self,
+        point: &Point2<T>,
+    ) -> Option<(LineSegment2<T>, LineSegment2<T>)> {
         let status_nodes = self.status_tree.mid_order_traversal();
         let mut index = 0;
         let mut flag = false;
@@ -241,10 +244,10 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
 
     fn get_left_right_in_u_c(
         &self,
-        source_is_p: &Vec<Segment2<T>>,
-        contain_p: &Vec<Segment2<T>>,
+        source_is_p: &Vec<LineSegment2<T>>,
+        contain_p: &Vec<LineSegment2<T>>,
         event_point: &Point2<T>,
-    ) -> (Segment2<T>, Segment2<T>) {
+    ) -> (LineSegment2<T>, LineSegment2<T>) {
         let mut segments = Vec::new();
         for segment in source_is_p {
             segments.push(segment.clone());
@@ -284,9 +287,9 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
 
     fn get_left_of_segment(
         &self,
-        segment: &Segment2<T>,
+        segment: &LineSegment2<T>,
         mid_order_traversal: &Vec<StatusNode<T>>,
-    ) -> Option<Segment2<T>> {
+    ) -> Option<LineSegment2<T>> {
         for (index, status_node) in mid_order_traversal.iter().enumerate() {
             let mut status_segment = status_node.segment.clone();
             if status_segment.source().equals(&segment.source())
@@ -304,9 +307,9 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
 
     fn get_right_of_segment(
         &self,
-        segment: &Segment2<T>,
+        segment: &LineSegment2<T>,
         mid_order_traversal: &Vec<StatusNode<T>>,
-    ) -> Option<Segment2<T>> {
+    ) -> Option<LineSegment2<T>> {
         for (index, status_node) in mid_order_traversal.iter().enumerate() {
             let mut status_segment = status_node.segment.clone();
             if status_segment.source().equals(&segment.source())
@@ -324,8 +327,8 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
 
     fn find_intersection_points(
         &mut self,
-        s1: &Segment2<T>,
-        s2: &Segment2<T>,
+        s1: &LineSegment2<T>,
+        s2: &LineSegment2<T>,
         event_point: &Point2<T>,
     ) {
         let points = segment_2_segment_2_intersection(s1, s2);
@@ -338,7 +341,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         }
     }
 
-    fn calculate_segment_value(&self, segment: &Segment2<T>, point: &Point2<T>) -> T {
+    fn calculate_segment_value(&self, segment: &LineSegment2<T>, point: &Point2<T>) -> T {
         let source = segment.source();
         let target = segment.target();
         if source.x().equals(target.x()) {
@@ -404,11 +407,11 @@ mod tests {
 
     #[test]
     fn test_sweep_line_segment_2_intersection() {
-        let segment1 = Segment2::new(Point2::new(10.0, 10.0), Point2::new(0.0, 10.0));
-        let segment2 = Segment2::new(Point2::new(0.0, 5.0), Point2::new(5.0, 10.0));
-        let segment3 = Segment2::new(Point2::new(3.0, 0.0), Point2::new(3.0, 15.0));
-        let segment4 = Segment2::new(Point2::new(3.0, 8.0), Point2::new(10.0, 10.0));
-        let segment5 = Segment2::new(Point2::new(3.0, 12.0), Point2::new(5.0, 0.0));
+        let segment1 = LineSegment2::new(Point2::new(10.0, 10.0), Point2::new(0.0, 10.0));
+        let segment2 = LineSegment2::new(Point2::new(0.0, 5.0), Point2::new(5.0, 10.0));
+        let segment3 = LineSegment2::new(Point2::new(3.0, 0.0), Point2::new(3.0, 15.0));
+        let segment4 = LineSegment2::new(Point2::new(3.0, 8.0), Point2::new(10.0, 10.0));
+        let segment5 = LineSegment2::new(Point2::new(3.0, 12.0), Point2::new(5.0, 0.0));
         let segments = vec![segment1, segment2, segment3, segment4, segment5];
         let mut sweep_line = SweepLineSegment2Intersection::new(&segments);
         let result = sweep_line.intersection();

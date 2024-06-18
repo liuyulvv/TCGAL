@@ -1,12 +1,12 @@
-use super::{arc_2::Arc2, number_type::NumberType, point_2::Point2};
+use super::{arc_segment_2::ArcSegment2, number_type::NumberType, point_2::Point2};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Circle2<T: NumberType> {
+pub struct CircleSegment2<T: NumberType> {
     center: Point2<T>,
     radius: T,
 }
 
-impl<T: NumberType> Circle2<T> {
+impl<T: NumberType> CircleSegment2<T> {
     pub fn new(center: Point2<T>, radius: T) -> Self {
         Self { center, radius }
     }
@@ -19,12 +19,12 @@ impl<T: NumberType> Circle2<T> {
         self.radius
     }
 
-    pub fn monotone(&self) -> Vec<Arc2<T>> {
+    pub fn monotone(&self) -> Vec<ArcSegment2<T>> {
         let mut arcs = Vec::new();
         let pi = T::pi();
         let two_pi = pi * T::from_f64(2.0);
-        arcs.push(Arc2::new(self.clone(), T::zero(), pi));
-        arcs.push(Arc2::new(self.clone(), pi, two_pi));
+        arcs.push(ArcSegment2::new(self.clone(), T::zero(), pi));
+        arcs.push(ArcSegment2::new(self.clone(), pi, two_pi));
         arcs
     }
 }

@@ -1,13 +1,13 @@
 use crate::algorithm::intersection::sweep_line_segment_2_intersection::SweepLineSegment2Intersection;
 
 use super::{
-    number_type::NumberType, point_2::Point2, segment_2::Segment2, triangle_2::Triangle2,
+    line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, triangle_2::Triangle2,
     util_enum::TurnDirection,
 };
 
 pub struct Polygon2<T: NumberType> {
     vertices: Vec<Point2<T>>,
-    edges: Vec<Segment2<T>>,
+    edges: Vec<LineSegment2<T>>,
 }
 
 impl<T: NumberType> Polygon2<T> {
@@ -15,7 +15,7 @@ impl<T: NumberType> Polygon2<T> {
         let edges = vertices
             .iter()
             .zip(vertices.iter().cycle().skip(1))
-            .map(|(source, target)| Segment2::new(*source, *target))
+            .map(|(source, target)| LineSegment2::new(*source, *target))
             .collect();
         Self { vertices, edges }
     }
@@ -24,7 +24,7 @@ impl<T: NumberType> Polygon2<T> {
         self.vertices.clone()
     }
 
-    pub fn edges(&self) -> Vec<Segment2<T>> {
+    pub fn edges(&self) -> Vec<LineSegment2<T>> {
         self.edges.clone()
     }
 

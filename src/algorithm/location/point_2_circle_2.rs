@@ -1,8 +1,11 @@
-use crate::kernel::{circle_2::Circle2, number_type::NumberType, point_2::Point2};
+use crate::kernel::{circle_segment_2::CircleSegment2, number_type::NumberType, point_2::Point2};
 
 use super::location_enum::Point2Circle2Location;
 
-pub fn is_point_2_on_circle_2<T: NumberType>(point_2: &Point2<T>, circle_2: &Circle2<T>) -> bool {
+pub fn is_point_2_on_circle_2<T: NumberType>(
+    point_2: &Point2<T>,
+    circle_2: &CircleSegment2<T>,
+) -> bool {
     let location = locate_point_2_circle_2(point_2, circle_2);
     match location {
         Point2Circle2Location::On => true,
@@ -12,7 +15,7 @@ pub fn is_point_2_on_circle_2<T: NumberType>(point_2: &Point2<T>, circle_2: &Cir
 
 pub fn locate_point_2_circle_2<T: NumberType>(
     point_2: &Point2<T>,
-    circle_2: &Circle2<T>,
+    circle_2: &CircleSegment2<T>,
 ) -> Point2Circle2Location {
     let center = circle_2.center();
     let radius = circle_2.radius();
@@ -34,7 +37,7 @@ mod tests {
 
     #[test]
     fn test_is_point_2_on_circle_2() {
-        let circle_2 = Circle2::new(Point2::new(0.0, 0.0), 10.0);
+        let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 10.0);
 
         let point_2 = Point2::new(0.0, 10.0);
         assert_eq!(is_point_2_on_circle_2(&point_2, &circle_2), true);
@@ -54,7 +57,7 @@ mod tests {
 
     #[test]
     fn test_locate_point_2_circle_2() {
-        let circle_2 = Circle2::new(Point2::new(0.0, 0.0), 10.0);
+        let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 10.0);
 
         let point_2 = Point2::new(0.0, 10.0);
         assert_eq!(
