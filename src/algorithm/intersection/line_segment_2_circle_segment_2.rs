@@ -1,25 +1,26 @@
 use crate::{
     algorithm::{
         location::{
-            location_enum::Point2Circle2Location, point_2_circle_2::locate_point_2_circle_2,
+            location_enum::Point2Circle2Location,
+            point_2_circle_segment_2::locate_point_2_circle_segment_2,
         },
-        projection::point_2_segment_2::point_2_project_segment_2,
+        projection::point_2_line_segment_2::point_2_project_line_segment_2,
     },
     kernel::{
         circle_segment_2::CircleSegment2, line_segment_2::LineSegment2, number_type::NumberType,
-        point_2::Point2,
+        point_2::Point2, segment_2::Segment2,
     },
 };
 
-pub fn is_segment_2_circle_2_intersected<T: NumberType>(
+pub fn is_line_segment_2_circle_segment_2_intersected<T: NumberType>(
     line_segment: &LineSegment2<T>,
     circle_segment: &CircleSegment2<T>,
 ) -> bool {
     let source = line_segment.source();
     let target = line_segment.target();
     let center = circle_segment.center();
-    let source_relation = locate_point_2_circle_2(&source, circle_segment);
-    let target_relation = locate_point_2_circle_2(&target, circle_segment);
+    let source_relation = locate_point_2_circle_segment_2(&source, circle_segment);
+    let target_relation = locate_point_2_circle_segment_2(&target, circle_segment);
     if source_relation == Point2Circle2Location::Inside
         && target_relation == Point2Circle2Location::Inside
     {
@@ -29,11 +30,11 @@ pub fn is_segment_2_circle_2_intersected<T: NumberType>(
     {
         return true;
     } else {
-        let projection_point = point_2_project_segment_2(&center, &line_segment);
+        let projection_point = point_2_project_line_segment_2(&center, &line_segment);
         match projection_point {
             Some(projection_point) => {
                 let projection_relation =
-                    locate_point_2_circle_2(&projection_point, circle_segment);
+                    locate_point_2_circle_segment_2(&projection_point, circle_segment);
                 if projection_relation == Point2Circle2Location::On
                     || projection_relation == Point2Circle2Location::Inside
                 {
@@ -49,7 +50,7 @@ pub fn is_segment_2_circle_2_intersected<T: NumberType>(
     }
 }
 
-pub fn segment_2_circle_2_intersection<T: NumberType>(
+pub fn line_segment_2_circle_segment_2_intersection<T: NumberType>(
     line_segment: &LineSegment2<T>,
     circle_segment: &CircleSegment2<T>,
 ) -> Vec<Point2<T>> {
@@ -57,8 +58,8 @@ pub fn segment_2_circle_2_intersection<T: NumberType>(
     let source = line_segment.source();
     let target = line_segment.target();
     let center = circle_segment.center();
-    let source_relation = locate_point_2_circle_2(&source, circle_segment);
-    let target_relation = locate_point_2_circle_2(&target, circle_segment);
+    let source_relation = locate_point_2_circle_segment_2(&source, circle_segment);
+    let target_relation = locate_point_2_circle_segment_2(&target, circle_segment);
     if source_relation == Point2Circle2Location::Inside
         && target_relation == Point2Circle2Location::Inside
     {
@@ -93,11 +94,11 @@ pub fn segment_2_circle_2_intersection<T: NumberType>(
             result.push(Point2::new(projection_point.x(), projection_point.y()));
             return result;
         } else {
-            let projection_point = point_2_project_segment_2(&center, &line_segment);
+            let projection_point = point_2_project_line_segment_2(&center, &line_segment);
             match projection_point {
                 Some(projection_point) => {
                     let projection_relation =
-                        locate_point_2_circle_2(&projection_point, circle_segment);
+                        locate_point_2_circle_segment_2(&projection_point, circle_segment);
                     if projection_relation == Point2Circle2Location::On {
                         result.push(projection_point);
                         return result;
@@ -141,14 +142,14 @@ mod tests {
         let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(1.0, 1.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            is_segment_2_circle_2_intersected(&segment_2, &circle_2),
+            is_line_segment_2_circle_segment_2_intersected(&segment_2, &circle_2),
             true
         );
 
         let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(1.0, 1.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 2.0);
         assert_eq!(
-            is_segment_2_circle_2_intersected(&segment_2, &circle_2),
+            is_line_segment_2_circle_segment_2_intersected(&segment_2, &circle_2),
             false
         );
 
@@ -158,7 +159,7 @@ mod tests {
         );
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            is_segment_2_circle_2_intersected(&segment_2, &circle_2),
+            is_line_segment_2_circle_segment_2_intersected(&segment_2, &circle_2),
             true
         );
 
@@ -168,7 +169,7 @@ mod tests {
         );
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            is_segment_2_circle_2_intersected(&segment_2, &circle_2),
+            is_line_segment_2_circle_segment_2_intersected(&segment_2, &circle_2),
             true
         );
 
@@ -178,14 +179,14 @@ mod tests {
         );
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            is_segment_2_circle_2_intersected(&segment_2, &circle_2),
+            is_line_segment_2_circle_segment_2_intersected(&segment_2, &circle_2),
             false
         );
 
         let segment_2 = LineSegment2::new(Point2::new(-2.0, 0.0), Point2::new(2.0, 0.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            is_segment_2_circle_2_intersected(&segment_2, &circle_2),
+            is_line_segment_2_circle_segment_2_intersected(&segment_2, &circle_2),
             true
         );
     }
@@ -195,7 +196,7 @@ mod tests {
         let segment_2 = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(1.0, 1.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            segment_2_circle_2_intersection(&segment_2, &circle_2),
+            line_segment_2_circle_segment_2_intersection(&segment_2, &circle_2),
             vec!(Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0))
         );
 
@@ -205,7 +206,7 @@ mod tests {
         );
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            segment_2_circle_2_intersection(&segment_2, &circle_2),
+            line_segment_2_circle_segment_2_intersection(&segment_2, &circle_2),
             vec!(
                 Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0),
                 Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / 2.0)
@@ -218,7 +219,7 @@ mod tests {
         );
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            segment_2_circle_2_intersection(&segment_2, &circle_2),
+            line_segment_2_circle_segment_2_intersection(&segment_2, &circle_2),
             vec!(
                 Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / 2.0),
                 Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0)
@@ -228,7 +229,7 @@ mod tests {
         let segment_2 = LineSegment2::new(Point2::new(10.0, 10.0), Point2::new(-10.0, -10.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 1.0);
         assert_eq!(
-            segment_2_circle_2_intersection(&segment_2, &circle_2),
+            line_segment_2_circle_segment_2_intersection(&segment_2, &circle_2),
             vec!(
                 Point2::new(f64::sqrt(2.0) / -2.0, f64::sqrt(2.0) / -2.0),
                 Point2::new(f64::sqrt(2.0) / 2.0, f64::sqrt(2.0) / 2.0)
@@ -238,14 +239,14 @@ mod tests {
         let segment_2 = LineSegment2::new(Point2::new(4.0, 3.0), Point2::new(10.0, 3.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 5.0);
         assert_eq!(
-            segment_2_circle_2_intersection(&segment_2, &circle_2),
+            line_segment_2_circle_segment_2_intersection(&segment_2, &circle_2),
             vec!(Point2::new(4.0, 3.0))
         );
 
         let segment_2 = LineSegment2::new(Point2::new(4.0, 3.0), Point2::new(-10.0, 3.0));
         let circle_2 = CircleSegment2::new(Point2::new(0.0, 0.0), 5.0);
         assert_eq!(
-            segment_2_circle_2_intersection(&segment_2, &circle_2),
+            line_segment_2_circle_segment_2_intersection(&segment_2, &circle_2),
             vec!(Point2::new(-4.0, 3.0), Point2::new(4.0, 3.0),)
         );
     }

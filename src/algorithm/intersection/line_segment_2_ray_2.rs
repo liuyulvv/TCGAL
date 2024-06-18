@@ -3,10 +3,13 @@ use crate::{
         location_enum::Point2Ray2Location,
         point_2_ray_2::{is_point_2_on_ray_2, locate_point_2_ray_2},
     },
-    kernel::{line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, ray_2::Ray2},
+    kernel::{
+        line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, ray_2::Ray2,
+        segment_2::Segment2,
+    },
 };
 
-pub fn is_segment_2_ray_2_intersected<T: NumberType>(
+pub fn is_line_segment_2_ray_2_intersected<T: NumberType>(
     line_segment: &LineSegment2<T>,
     ray_segment: &Ray2<T>,
 ) -> bool {
@@ -18,7 +21,7 @@ pub fn is_segment_2_ray_2_intersected<T: NumberType>(
     cross1 * cross2 <= eps && cross1 >= -eps
 }
 
-pub fn segment_2_ray_2_intersection<T: NumberType>(
+pub fn line_segment_2_ray_2_intersection<T: NumberType>(
     line_segment: &LineSegment2<T>,
     ray_segment: &Ray2<T>,
 ) -> Vec<Point2<T>> {
@@ -88,53 +91,53 @@ mod tests {
     use crate::kernel::{point_2::Point2, vector_2::Vector2};
 
     #[test]
-    fn test_is_segment_2_ray_2_intersected() {
+    fn test_is_line_segment_2_ray_2_intersected() {
         let line_segment = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(2.0, 0.0));
 
         let ray_segment = Ray2::new(Point2::new(1.0, 1.0), Vector2::new(0.0, -1.0));
         assert_eq!(
-            is_segment_2_ray_2_intersected(&line_segment, &ray_segment),
+            is_line_segment_2_ray_2_intersected(&line_segment, &ray_segment),
             true
         );
 
         let ray_segment = Ray2::new(Point2::new(1.0, 1.0), Vector2::new(0.0, 1.0));
         assert_eq!(
-            is_segment_2_ray_2_intersected(&line_segment, &ray_segment),
+            is_line_segment_2_ray_2_intersected(&line_segment, &ray_segment),
             false
         );
 
         let ray_segment = Ray2::new(Point2::new(1.0, 1.0), Vector2::new(1.0, 0.0));
         assert_eq!(
-            is_segment_2_ray_2_intersected(&line_segment, &ray_segment),
+            is_line_segment_2_ray_2_intersected(&line_segment, &ray_segment),
             false
         );
 
         let ray_segment = Ray2::new(Point2::new(0.0, 0.0), Vector2::new(1.0, 0.0));
         assert_eq!(
-            is_segment_2_ray_2_intersected(&line_segment, &ray_segment),
+            is_line_segment_2_ray_2_intersected(&line_segment, &ray_segment),
             true
         );
     }
 
     #[test]
-    fn test_segment_2_ray_2_intersection() {
+    fn test_line_segment_2_ray_2_intersection() {
         let line_segment = LineSegment2::new(Point2::new(0.0, 0.0), Point2::new(2.0, 0.0));
 
         let ray_segment = Ray2::new(Point2::new(1.0, 1.0), Vector2::new(0.0, -1.0));
-        let result = segment_2_ray_2_intersection(&line_segment, &ray_segment);
+        let result = line_segment_2_ray_2_intersection(&line_segment, &ray_segment);
         assert_eq!(result.len(), 1);
         assert_eq!(result[0], Point2::new(1.0, 0.0));
 
         let ray_segment = Ray2::new(Point2::new(1.0, 1.0), Vector2::new(0.0, 1.0));
-        let result = segment_2_ray_2_intersection(&line_segment, &ray_segment);
+        let result = line_segment_2_ray_2_intersection(&line_segment, &ray_segment);
         assert_eq!(result.len(), 0);
 
         let ray_segment = Ray2::new(Point2::new(1.0, 1.0), Vector2::new(1.0, 0.0));
-        let result = segment_2_ray_2_intersection(&line_segment, &ray_segment);
+        let result = line_segment_2_ray_2_intersection(&line_segment, &ray_segment);
         assert_eq!(result.len(), 0);
 
         let ray_segment = Ray2::new(Point2::new(0.0, 0.0), Vector2::new(1.0, 0.0));
-        let result = segment_2_ray_2_intersection(&line_segment, &ray_segment);
+        let result = line_segment_2_ray_2_intersection(&line_segment, &ray_segment);
         assert_eq!(result.len(), 2);
         assert_eq!(result[0], Point2::new(0.0, 0.0));
         assert_eq!(result[1], Point2::new(2.0, 0.0));

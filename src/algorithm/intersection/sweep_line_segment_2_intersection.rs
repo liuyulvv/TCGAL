@@ -1,13 +1,15 @@
 use crate::{
     algorithm::{
-        intersection::segment_2_segment_2::segment_2_segment_2_intersection,
-        location::point_2_segment_2::is_point_2_on_segment_2,
+        intersection::line_segment_2_line_segment_2::line_segment_2_line_segment_2_intersection,
+        location::point_2_line_segment_2::is_point_2_on_line_segment_2,
     },
     data_structure::{
         avl_tree::{AVLTree, AVLTreeOption},
         priority_queue::PriorityQueue,
     },
-    kernel::{line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2},
+    kernel::{
+        line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, segment_2::Segment2,
+    },
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -207,7 +209,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
             if start.equals(point) || target.equals(point) {
                 continue;
             }
-            if is_point_2_on_segment_2(point, &status_node.segment) {
+            if is_point_2_on_line_segment_2(point, &status_node.segment) {
                 result.push(status_node.segment);
             }
         }
@@ -331,7 +333,7 @@ impl<T: NumberType> SweepLineSegment2Intersection<T> {
         s2: &LineSegment2<T>,
         event_point: &Point2<T>,
     ) {
-        let points = segment_2_segment_2_intersection(s1, s2);
+        let points = line_segment_2_line_segment_2_intersection(s1, s2);
         for point in points {
             if point.x() > event_point.x()
                 || (point.x().equals(event_point.x()) && point.y() > event_point.y())
