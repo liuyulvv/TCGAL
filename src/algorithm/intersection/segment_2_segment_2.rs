@@ -1,13 +1,25 @@
-use crate::kernel::{
-    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Segment2Type,
+use crate::{
+    algorithm::intersection::line_segment_2_circle_segment_2::is_line_segment_2_circle_segment_2_intersected,
+    kernel::{
+        number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Segment2Type,
+    },
 };
 
 use super::{
-    arc_segment_2_arc_segment_2::is_arc_segment_2_arc_segment_2_intersected,
+    arc_segment_2_arc_segment_2::{
+        arc_segment_2_arc_segment_2_intersection, is_arc_segment_2_arc_segment_2_intersected,
+    },
+    circle_segment_2_arc_segment_2::{
+        circle_segment_2_arc_segment_2_intersection, is_circle_segment_2_arc_segment_2_intersected,
+    },
     circle_segment_2_circle_segment_2::{
         circle_segment_2_circle_segment_2_intersection,
         is_circle_segment_2_circle_segment_2_intersected,
     },
+    line_segment_2_arc_segment_2::{
+        is_line_segment_2_arc_segment_2_intersected, line_segment_2_arc_segment_2_intersection,
+    },
+    line_segment_2_circle_segment_2::line_segment_2_circle_segment_2_intersection,
     line_segment_2_line_segment_2::{
         is_line_segment_2_line_segment_2_intersected, line_segment_2_line_segment_2_intersection,
     },
@@ -32,7 +44,26 @@ pub fn is_segment_2_segment_2_intersected<T: NumberType>(
             }
         }
     } else {
-        todo!()
+        match segment_a_type {
+            Segment2Type::LineSegment2 => match segment_b_type {
+                Segment2Type::CircleSegment2 => {
+                    is_line_segment_2_circle_segment_2_intersected(segment_a, segment_b)
+                }
+                _ => is_line_segment_2_arc_segment_2_intersected(segment_a, segment_b),
+            },
+            Segment2Type::CircleSegment2 => match segment_b_type {
+                Segment2Type::LineSegment2 => {
+                    is_line_segment_2_circle_segment_2_intersected(segment_b, segment_a)
+                }
+                _ => is_circle_segment_2_arc_segment_2_intersected(segment_a, segment_b),
+            },
+            Segment2Type::ArcSegment2 => match segment_b_type {
+                Segment2Type::LineSegment2 => {
+                    is_line_segment_2_arc_segment_2_intersected(segment_b, segment_a)
+                }
+                _ => is_arc_segment_2_arc_segment_2_intersected(segment_b, segment_a),
+            },
+        }
     }
 }
 
@@ -51,10 +82,29 @@ pub fn segment_2_segment_2_intersection<T: NumberType>(
                 circle_segment_2_circle_segment_2_intersection(segment_a, segment_b)
             }
             Segment2Type::ArcSegment2 => {
-                todo!()
+                arc_segment_2_arc_segment_2_intersection(segment_a, segment_b)
             }
         }
     } else {
-        todo!()
+        match segment_a_type {
+            Segment2Type::LineSegment2 => match segment_b_type {
+                Segment2Type::CircleSegment2 => {
+                    line_segment_2_circle_segment_2_intersection(segment_a, segment_b)
+                }
+                _ => line_segment_2_arc_segment_2_intersection(segment_a, segment_b),
+            },
+            Segment2Type::CircleSegment2 => match segment_b_type {
+                Segment2Type::LineSegment2 => {
+                    line_segment_2_circle_segment_2_intersection(segment_b, segment_a)
+                }
+                _ => circle_segment_2_arc_segment_2_intersection(segment_a, segment_b),
+            },
+            Segment2Type::ArcSegment2 => match segment_b_type {
+                Segment2Type::LineSegment2 => {
+                    line_segment_2_arc_segment_2_intersection(segment_b, segment_a)
+                }
+                _ => circle_segment_2_arc_segment_2_intersection(segment_b, segment_a),
+            },
+        }
     }
 }
