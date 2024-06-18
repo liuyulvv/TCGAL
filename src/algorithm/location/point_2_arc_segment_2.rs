@@ -22,13 +22,36 @@ pub fn locate_point_2_arc_segment_2<T: NumberType>(
                 let radian_source = vector.radian_to(&source);
                 let radian_target = vector.radian_to(&target);
                 let source_radian = source.radian_to(&vector);
-                if radian_source.equals(T::zero()) || radian_target.equals(T::zero()) {
+                let target_radian = target.radian_to(&vector);
+                if radian_source.equals(T::zero())
+                    || radian_target.equals(T::zero())
+                    || source_radian.equals(T::zero())
+                    || target_radian.equals(T::zero())
+                {
                     Point2ArcSegment2Location::On
+                } else if (source_radian + radian_target).equals(radian) {
+                    Point2ArcSegment2Location::On
+                } else {
+                    Point2ArcSegment2Location::NotOn
                 }
-                todo!()
             }
             Orientation::Clockwise => {
-                todo!()
+                let radian = target.radian_to(&source);
+                let radian_source = vector.radian_to(&source);
+                let radian_target = vector.radian_to(&target);
+                let source_radian = source.radian_to(&vector);
+                let target_radian = target.radian_to(&vector);
+                if radian_source.equals(T::zero())
+                    || radian_target.equals(T::zero())
+                    || source_radian.equals(T::zero())
+                    || target_radian.equals(T::zero())
+                {
+                    Point2ArcSegment2Location::On
+                } else if (radian_source + target_radian).equals(radian) {
+                    Point2ArcSegment2Location::On
+                } else {
+                    Point2ArcSegment2Location::NotOn
+                }
             }
         }
     } else {
