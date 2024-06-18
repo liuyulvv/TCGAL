@@ -28,6 +28,9 @@ pub trait NumberType:
     fn abs(self) -> Self;
     fn sin(self) -> Self;
     fn cos(self) -> Self;
+    fn acos(self) -> Self;
+    fn atan(self) -> Self;
+    fn atan2(self, other: Self) -> Self;
 }
 
 impl DefaultNumberValueTrait for f32 {
@@ -95,6 +98,18 @@ impl NumberType for f32 {
     fn cos(self) -> Self {
         self.cos()
     }
+
+    fn acos(self) -> Self {
+        self.acos()
+    }
+
+    fn atan(self) -> Self {
+        self.atan()
+    }
+
+    fn atan2(self, other: Self) -> Self {
+        self.atan2(other)
+    }
 }
 
 impl NumberType for f64 {
@@ -117,5 +132,17 @@ impl NumberType for f64 {
 
     fn cos(self) -> Self {
         self.cos()
+    }
+
+    fn acos(self) -> Self {
+        self.acos()
+    }
+
+    fn atan(self) -> Self {
+        self.atan()
+    }
+
+    fn atan2(self, other: Self) -> Self {
+        self.atan2(other)
     }
 }
