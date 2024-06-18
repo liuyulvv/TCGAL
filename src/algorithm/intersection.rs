@@ -1,4 +1,5 @@
 mod arc_segment_2_arc_segment_2;
+mod circle_segment_2_arc_segment_2;
 mod circle_segment_2_circle_segment_2;
 mod line_segment_2_arc_segment_2;
 mod line_segment_2_circle_segment_2;
