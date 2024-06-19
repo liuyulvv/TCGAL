@@ -4,6 +4,17 @@ use crate::kernel::{
 
 use super::location_enum::Point2ArcSegment2Location;
 
+pub fn is_point_2_on_arc_segment_2<T: NumberType>(
+    point: &Point2<T>,
+    arc_segment: &impl Segment2<T>,
+) -> bool {
+    let location = locate_point_2_arc_segment_2(point, arc_segment);
+    match location {
+        Point2ArcSegment2Location::On => true,
+        _ => false,
+    }
+}
+
 pub fn locate_point_2_arc_segment_2<T: NumberType>(
     point: &Point2<T>,
     arc_segment: &impl Segment2<T>,
