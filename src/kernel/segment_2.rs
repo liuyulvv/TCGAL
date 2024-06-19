@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use super::{
     number_type::NumberType,
     point_2::Point2,
@@ -13,7 +15,7 @@ use super::{
  * - ArcSegment2 has implemented this trait.
  */
 
-pub trait Segment2<T: NumberType> {
+pub trait Segment2<T: NumberType>: Debug + Clone + Copy {
     fn segment_type(&self) -> Segment2Type;
     fn source(&self) -> Point2<T>;
     fn target(&self) -> Point2<T>;
