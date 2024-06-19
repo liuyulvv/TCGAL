@@ -39,3 +39,50 @@ pub fn circle_segment_2_arc_segment_2_intersection<T: NumberType>(
     }
     result
 }
+
+#[cfg(test)]
+mod tests {
+    use std::f64::consts::PI;
+
+    use crate::kernel::arc_segment_2::ArcSegment2;
+
+    use super::*;
+
+    #[test]
+    fn test_is_circle_segment_2_arc_segment_2_intersected() {
+        let circle_segment = CircleSegment2::new(Point2::new(0.0, 0.0), 5.0);
+
+        let arc_segment_b =
+            ArcSegment2::new(CircleSegment2::new(Point2::new(0.0, 0.0), 5.0), 0.0, PI);
+        assert_eq!(
+            is_circle_segment_2_arc_segment_2_intersected(&circle_segment, &arc_segment_b),
+            false
+        );
+
+        let arc_segment_b =
+            ArcSegment2::new(CircleSegment2::new(Point2::new(5.0, 0.0), 5.0), 0.0, PI);
+        assert_eq!(
+            is_circle_segment_2_arc_segment_2_intersected(&circle_segment, &arc_segment_b),
+            true
+        );
+    }
+
+    #[test]
+    fn test_circle_segment_2_arc_segment_2_intersection() {
+        let circle_segment = CircleSegment2::new(Point2::new(0.0, 0.0), 5.0);
+
+        let arc_segment_b =
+            ArcSegment2::new(CircleSegment2::new(Point2::new(0.0, 0.0), 5.0), 0.0, PI);
+        assert_eq!(
+            circle_segment_2_arc_segment_2_intersection(&circle_segment, &arc_segment_b),
+            Vec::new()
+        );
+
+        let arc_segment_b =
+            ArcSegment2::new(CircleSegment2::new(Point2::new(5.0, 0.0), 5.0), 0.0, PI);
+        assert_eq!(
+            circle_segment_2_arc_segment_2_intersection(&circle_segment, &arc_segment_b),
+            vec![Point2::new(2.5, 2.5 * 3.0.sqrt()),]
+        );
+    }
+}
