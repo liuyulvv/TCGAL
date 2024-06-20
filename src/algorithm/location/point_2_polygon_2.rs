@@ -2,7 +2,7 @@ use crate::kernel::{number_type::NumberType, point_2::Point2, polygon_2::Polygon
 
 use super::{
     location_enum::{Point2Polygon2Location, Point2Segment2Location},
-    point_2_segment_2::locate_point_2_segment_2,
+    point_2_line_segment_2::locate_point_2_line_segment_2,
 };
 
 pub fn is_point_2_on_polygon_2<T: NumberType>(point: &Point2<T>, polygon: &Polygon2<T>) -> bool {
@@ -42,7 +42,7 @@ pub fn locate_point_2_polygon_2<T: NumberType>(
     let edges = polygon.edges();
     let mut location = None;
     for edge in &edges {
-        let edge_location = locate_point_2_segment_2(point, edge);
+        let edge_location = locate_point_2_line_segment_2(point, edge);
         match edge_location {
             Point2Segment2Location::On => return Point2Polygon2Location::On,
             Point2Segment2Location::Left => match location {

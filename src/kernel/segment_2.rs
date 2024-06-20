@@ -1,27 +1,26 @@
-use super::{number_type::NumberType, point_2::Point2};
+use std::fmt::Debug;
 
-#[derive(Debug, Clone, Copy)]
-pub struct Segment2<T: NumberType> {
-    source: Point2<T>,
-    target: Point2<T>,
-}
+use super::{
+    number_type::NumberType,
+    point_2::Point2,
+    util_enum::{Orientation, Segment2Type},
+};
 
-impl<T: NumberType> Segment2<T> {
-    pub fn new(source: Point2<T>, target: Point2<T>) -> Self {
-        Self { source, target }
-    }
+/** Segment2 trait
+ *
+ * - LineSegment2 has implemented this trait except for the **center**, **radius**, **orientation**, and **reverse_orientation** methods.
+ *
+ * - CircleSegment2 has implemented this trait except for the **source**, **target**, **orientation** and **reverse_orientation** methods.
+ *
+ * - ArcSegment2 has implemented this trait.
+ */
 
-    pub fn source(&self) -> Point2<T> {
-        self.source.clone()
-    }
-
-    pub fn target(&self) -> Point2<T> {
-        self.target.clone()
-    }
-}
-
-impl<T: NumberType> PartialEq for Segment2<T> {
-    fn eq(&self, other: &Self) -> bool {
-        self.source == other.source && self.target == other.target
-    }
+pub trait Segment2<T: NumberType>: Debug + Clone + Copy {
+    fn segment_type(&self) -> Segment2Type;
+    fn source(&self) -> Point2<T>;
+    fn target(&self) -> Point2<T>;
+    fn center(&self) -> Point2<T>;
+    fn radius(&self) -> T;
+    fn orientation(&self) -> Orientation;
+    fn reverse_orientation(&mut self);
 }

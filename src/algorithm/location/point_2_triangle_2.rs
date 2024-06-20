@@ -1,5 +1,5 @@
 use crate::{
-    algorithm::location::point_2_segment_2::locate_point_2_segment_2,
+    algorithm::location::point_2_line_segment_2::locate_point_2_line_segment_2,
     kernel::{number_type::NumberType, point_2::Point2, triangle_2::Triangle2},
 };
 
@@ -12,7 +12,7 @@ pub fn locate_point_2_triangle_2<T: NumberType>(
     let edges = triangle.edges();
     let mut location = None;
     for edge in &edges {
-        let edge_location = locate_point_2_segment_2(point, edge);
+        let edge_location = locate_point_2_line_segment_2(point, edge);
         match edge_location {
             Point2Segment2Location::On => return Point2Triangle2Location::On,
             Point2Segment2Location::Left => match location {
