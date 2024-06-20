@@ -3,7 +3,7 @@ use crate::{
         intersection::circle_segment_2_circle_segment_2::circle_segment_2_circle_segment_2_intersection,
         location::{
             location_enum::Point2ArcSegment2Location,
-            point_2_arc_segment_2::locate_point_2_arc_segment_2,
+            point_2_arc_segment_2::{is_point_2_on_arc_segment_2, locate_point_2_arc_segment_2},
         },
     },
     kernel::{
@@ -29,12 +29,30 @@ pub fn arc_segment_2_arc_segment_2_intersection<T: NumberType>(
     let points =
         circle_segment_2_circle_segment_2_intersection(&circle_segment_a, &circle_segment_b);
     let mut result = Vec::new();
-    for point in &points {
-        let on_arc_segment_a = locate_point_2_arc_segment_2(point, arc_segment_a);
-        let on_arc_segment_b = locate_point_2_arc_segment_2(point, arc_segment_b);
-        if on_arc_segment_a == on_arc_segment_b && on_arc_segment_a == Point2ArcSegment2Location::On
-        {
-            result.push(point.clone());
+    if points.is_empty() {
+        if is_point_2_on_arc_segment_2(&arc_segment_a.source(), arc_segment_b) {
+            result.push(arc_segment_a.source());
+        }
+        if is_point_2_on_arc_segment_2(&arc_segment_a.target(), arc_segment_b) {
+            result.push(arc_segment_a.target());
+        }
+        if is_point_2_on_arc_segment_2(&arc_segment_b.source(), arc_segment_a) {
+            result.push(arc_segment_b.source());
+        }
+        if is_point_2_on_arc_segment_2(&arc_segment_b.target(), arc_segment_a) {
+            result.push(arc_segment_b.target());
+        }
+        result.sort();
+        result.dedup();
+    } else {
+        for point in &points {
+            let on_arc_segment_a = locate_point_2_arc_segment_2(point, arc_segment_a);
+            let on_arc_segment_b = locate_point_2_arc_segment_2(point, arc_segment_b);
+            if on_arc_segment_a == on_arc_segment_b
+                && on_arc_segment_a == Point2ArcSegment2Location::On
+            {
+                result.push(point.clone());
+            }
         }
     }
     return result;
@@ -77,7 +95,7 @@ mod tests {
             ArcSegment2::new(CircleSegment2::new(Point2::new(0.0, 0.0), 5.0), 0.0, PI);
         assert_eq!(
             arc_segment_2_arc_segment_2_intersection(&arc_segment_a, &arc_segment_b),
-            Vec::new()
+            vec![Point2::new(5.0, 0.0), Point2::new(-5.0, 0.0),]
         );
 
         let arc_segment_b =
@@ -85,6 +103,16 @@ mod tests {
         assert_eq!(
             arc_segment_2_arc_segment_2_intersection(&arc_segment_a, &arc_segment_b),
             vec![Point2::new(2.5, 2.5 * 3.0.sqrt()),]
+        );
+
+        let arc_segment_b = ArcSegment2::new(
+            CircleSegment2::new(Point2::new(0.0, 0.0), 5.0),
+            PI,
+            PI * 2.0,
+        );
+        assert_eq!(
+            arc_segment_2_arc_segment_2_intersection(&arc_segment_a, &arc_segment_b),
+            vec![Point2::new(5.0, 0.0), Point2::new(-5.0, 0.0),]
         );
     }
 }
