@@ -1,5 +1,5 @@
 use std::{
-    fmt::Debug,
+    fmt::{Debug, Display},
     ops::{Add, Div, Mul, Neg, Sub},
 };
 
@@ -22,6 +22,7 @@ pub trait NumberType:
     + Clone
     + Copy
     + Debug
+    + Display
 {
     fn equals(self, other: Self) -> bool;
     fn sqrt(self) -> Self;

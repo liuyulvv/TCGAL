@@ -19,10 +19,6 @@ impl<T: Ord> PriorityQueue<T> {
         self.heap.pop()
     }
 
-    pub fn peek(&self) -> Option<&T> {
-        self.heap.peek()
-    }
-
     pub fn is_empty(&self) -> bool {
         self.heap.is_empty()
     }
