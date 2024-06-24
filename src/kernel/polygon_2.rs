@@ -1,4 +1,4 @@
-use crate::algorithm::intersection::sweep_line_segment_2_intersection::SweepLineSegment2Intersection;
+use crate::algorithm::intersection::sweep_segment_2_intersection::SweepSegment2Intersection;
 
 use super::{
     line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, triangle_2::Triangle2,
@@ -45,7 +45,10 @@ impl<T: NumberType> Polygon2<T> {
 
     pub fn is_simple(&self) -> bool {
         let edges = self.edges();
-        let mut sweep = SweepLineSegment2Intersection::new(&edges);
+        let mut sweep = SweepSegment2Intersection::new();
+        for edge in edges.iter() {
+            sweep.push_segment(edge);
+        }
         let intersections = sweep.intersection();
         let vertices_size = self.vertices.len();
         if vertices_size == intersections.len() {
