@@ -12,27 +12,34 @@ pub struct ArcSegment2<T: NumberType> {
 
 impl<T: NumberType> ArcSegment2<T> {
     pub fn new(support: CircleSegment2<T>, source_radian: T, target_radian: T) -> Self {
-        let mut source_radian = source_radian;
-        let mut target_radian = target_radian;
-        let pi = T::pi();
-        let two_pi = pi * T::from_f64(2.0);
-        while !source_radian.equals(two_pi) && source_radian > two_pi {
-            source_radian = source_radian - two_pi;
-        }
-        while !target_radian.equals(two_pi) && target_radian > two_pi {
-            target_radian = target_radian - two_pi;
-        }
-        if source_radian.equals(target_radian) {
-            source_radian = T::zero();
-            target_radian = two_pi;
-        } else if source_radian > target_radian {
-            target_radian = target_radian + two_pi;
-        }
+        // if target_radian < source_radian {
+        //     panic!("source_radian must be less than target_radian");
+        // }
+        // let mut source_radian = source_radian;
+        // let mut target_radian = target_radian;
+        // let two_pi = T::pi() * T::from_f64(2.0);
+        // while !source_radian.equals(two_pi) && source_radian > two_pi {
+        //     source_radian = source_radian - two_pi;
+        // }
+        // while !target_radian.equals(two_pi) && target_radian > two_pi {
+        //     target_radian = target_radian - two_pi;
+        // }
+        // if source_radian.equals(target_radian) {
+        //     source_radian = T::zero();
+        //     target_radian = two_pi;
+        // } else if source_radian > target_radian {
+        //     target_radian = target_radian + two_pi;
+        // }
         Self {
             support,
             source_radian,
             target_radian,
         }
+    }
+
+    pub fn is_top(&self) -> bool {
+        let pi = T::pi();
+        self.source_radian < pi && (self.target_radian.equals(pi) || self.target_radian < pi)
     }
 
     pub fn monotone(&self) -> Vec<ArcSegment2<T>> {
@@ -42,11 +49,18 @@ impl<T: NumberType> ArcSegment2<T> {
         let mut end_pi = T::zero();
         let mut min_flag = false;
         while !end_pi.equals(self.target_radian) && end_pi < self.target_radian {
-            if !min_flag && (end_pi.equals(self.source_radian) || end_pi > self.source_radian) {
+            if !min_flag && end_pi > self.source_radian {
                 min_flag = true;
-                radians.push(self.source_radian.clone());
+                if end_pi > self.source_radian {
+                    radians.push(end_pi - pi);
+                    if !self.source_radian.equals(end_pi - pi) {
+                        radians.push(self.source_radian.clone());
+                    }
+                }
             }
-            radians.push(end_pi.clone());
+            if end_pi.equals(self.source_radian) || end_pi > self.source_radian {
+                radians.push(end_pi.clone());
+            }
             end_pi = end_pi + pi;
         }
         radians.push(self.target_radian.clone());
