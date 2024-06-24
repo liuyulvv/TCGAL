@@ -1,8 +1,5 @@
 use super::{
-    number_type::NumberType,
-    point_2::Point2,
-    segment_2::Segment2,
-    util_enum::{Orientation, Segment2Type},
+    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Segment2Type,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -22,8 +19,16 @@ impl<T: NumberType> Segment2<T> for LineSegment2<T> {
         self.source.clone()
     }
 
+    fn source_radian(&self) -> T {
+        panic!("LineSegment2 does not have a source radian")
+    }
+
     fn target(&self) -> Point2<T> {
         self.target.clone()
+    }
+
+    fn target_radian(&self) -> T {
+        panic!("LineSegment2 does not have a target radian")
     }
 
     fn segment_type(&self) -> Segment2Type {
@@ -36,14 +41,6 @@ impl<T: NumberType> Segment2<T> for LineSegment2<T> {
 
     fn radius(&self) -> T {
         panic!("LineSegment2 does not have a radius")
-    }
-
-    fn orientation(&self) -> Orientation {
-        panic!("LineSegment2 does not have an orientation")
-    }
-
-    fn reverse_orientation(&mut self) {
-        panic!("LineSegment2 does not have an orientation")
     }
 }
 

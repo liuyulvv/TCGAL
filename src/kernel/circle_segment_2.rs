@@ -1,9 +1,6 @@
 use super::{
-    arc_segment_2::ArcSegment2,
-    number_type::NumberType,
-    point_2::Point2,
-    segment_2::Segment2,
-    util_enum::{Orientation, Segment2Type},
+    arc_segment_2::ArcSegment2, number_type::NumberType, point_2::Point2, segment_2::Segment2,
+    util_enum::Segment2Type,
 };
 
 #[derive(Debug, Clone, Copy)]
@@ -36,8 +33,16 @@ impl<T: NumberType> Segment2<T> for CircleSegment2<T> {
         panic!("CircleSegment2 does not have a source point")
     }
 
+    fn source_radian(&self) -> T {
+        panic!("CircleSegment2 does not have a source radian")
+    }
+
     fn target(&self) -> Point2<T> {
         panic!("CircleSegment2 does not have a target point")
+    }
+
+    fn target_radian(&self) -> T {
+        panic!("CircleSegment2 does not have a target radian")
     }
 
     fn center(&self) -> Point2<T> {
@@ -46,13 +51,5 @@ impl<T: NumberType> Segment2<T> for CircleSegment2<T> {
 
     fn radius(&self) -> T {
         self.radius
-    }
-
-    fn orientation(&self) -> Orientation {
-        panic!("CircleSegment2 does not have an orientation")
-    }
-
-    fn reverse_orientation(&mut self) {
-        panic!("CircleSegment2 does not have an orientation")
     }
 }

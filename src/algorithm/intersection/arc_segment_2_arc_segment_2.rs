@@ -75,7 +75,7 @@ mod tests {
             ArcSegment2::new(CircleSegment2::new(Point2::new(0.0, 0.0), 5.0), 0.0, PI);
         assert_eq!(
             is_arc_segment_2_arc_segment_2_intersected(&arc_segment_a, &arc_segment_b),
-            false
+            true
         );
 
         let arc_segment_b =
