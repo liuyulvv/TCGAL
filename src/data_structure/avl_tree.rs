@@ -46,10 +46,6 @@ where
                             let right = node.borrow().right.clone();
                             node.borrow_mut().right = Self::insert(right, value, option);
                         }
-                        AVLTreeOption::SameNodeInsertLeft => {
-                            let left = node.borrow().left.clone();
-                            node.borrow_mut().left = Self::insert(left, value, option);
-                        }
                     }
                 }
                 Self::update_height(Some(node.clone()));
@@ -189,7 +185,6 @@ where
 pub enum AVLTreeOption {
     DisableSameNode,
     SameNodeInsertRight,
-    SameNodeInsertLeft,
 }
 
 #[derive(Debug, Clone)]
