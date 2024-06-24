@@ -1,11 +1,26 @@
-use std::ops::{Add, Sub};
+use std::{
+    fmt::{Debug, Display},
+    ops::{Add, Sub},
+};
 
 use super::{number_type::NumberType, util_enum::TurnDirection, vector_2::Vector2};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone, Copy)]
 pub struct Point2<T: NumberType> {
     x: T,
     y: T,
+}
+
+impl<T: NumberType> Debug for Point2<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Point2 ({}, {})", self.x, self.y)
+    }
+}
+
+impl<T: NumberType> Display for Point2<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Point2 ({}, {})", self.x, self.y)
+    }
 }
 
 impl<T: NumberType> Point2<T> {
