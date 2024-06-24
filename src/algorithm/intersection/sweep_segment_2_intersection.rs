@@ -1,15 +1,15 @@
-use crate::algorithm::location::point_2_arc_segment_2::is_point_2_on_arc_segment_2;
-use crate::algorithm::location::point_2_line_segment_2::is_point_2_on_line_segment_2;
-use crate::data_structure::avl_tree::{AVLTree, AVLTreeOption};
-use crate::data_structure::priority_queue::PriorityQueue;
-use crate::kernel::arc_segment_2::ArcSegment2;
-use crate::kernel::circle_segment_2::CircleSegment2;
-use crate::kernel::line_segment_2::LineSegment2;
-use crate::kernel::number_type::NumberType;
-use crate::kernel::point_2::Point2;
-use crate::kernel::segment_2::Segment2;
-use crate::kernel::util_enum::Segment2Type;
-use crate::kernel::vector_2::Vector2;
+use crate::algorithm::location::{
+    point_2_arc_segment_2::is_point_2_on_arc_segment_2,
+    point_2_line_segment_2::is_point_2_on_line_segment_2,
+};
+use crate::data_structure::{
+    avl_tree::{AVLTree, AVLTreeOption},
+    priority_queue::PriorityQueue,
+};
+use crate::kernel::{
+    arc_segment_2::ArcSegment2, circle_segment_2::CircleSegment2, line_segment_2::LineSegment2,
+    number_type::NumberType, point_2::Point2, segment_2::Segment2, util_enum::Segment2Type,
+};
 
 use super::segment_2_segment_2::segment_2_segment_2_intersection;
 
@@ -57,8 +57,8 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                 self.segments
                     .push(StatusNodeSegment::ArcSegment2(ArcSegment2::new(
                         circle_segment.clone(),
-                        T::pi(),
                         T::zero(),
+                        T::pi(),
                     )));
                 self.segments
                     .push(StatusNodeSegment::ArcSegment2(ArcSegment2::new(
@@ -68,36 +68,19 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                     )));
             }
             Segment2Type::ArcSegment2 => {
-                let source = segment.source();
-                let target = segment.target();
                 let center = segment.center();
                 let radius = segment.radius();
                 let circle_segment = CircleSegment2::new(center, radius);
 
-                let source_vector = (source - center).normalize();
-                let target_vector = (target - center).normalize();
-                let vector = Vector2::new(T::from_f64(2.0), T::zero());
-                let source_radian = vector.radian_to(&source_vector);
-                let target_radian = vector.radian_to(&target_vector);
-
-                let arc_segment =
-                    ArcSegment2::new(circle_segment.clone(), source_radian, target_radian);
+                let arc_segment = ArcSegment2::new(
+                    circle_segment.clone(),
+                    segment.source_radian(),
+                    segment.target_radian(),
+                );
                 let arc_segments = arc_segment.monotone();
                 for arc_segment in arc_segments {
-                    let source = arc_segment.source();
-                    let target = arc_segment.target();
-                    let source_radian = vector.radian_to(&source_vector);
-                    let target_radian = vector.radian_to(&target_vector);
-                    if source.x() < target.x() {
-                        self.segments
-                            .push(StatusNodeSegment::ArcSegment2(arc_segment));
-                    } else {
-                        let circle_segment = CircleSegment2::new(center, radius);
-                        let arc_segment =
-                            ArcSegment2::new(circle_segment, target_radian, source_radian);
-                        self.segments
-                            .push(StatusNodeSegment::ArcSegment2(arc_segment));
-                    }
+                    self.segments
+                        .push(StatusNodeSegment::ArcSegment2(arc_segment));
                 }
             }
         }
@@ -286,7 +269,9 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                     }
                 }
                 StatusNodeSegment::ArcSegment2(arc_segment) => {
-                    if arc_segment.source().equals(event_point) {
+                    if (arc_segment.is_top() && arc_segment.target().equals(event_point))
+                        || (!arc_segment.is_top() && arc_segment.source().equals(event_point))
+                    {
                         result.push(segment.clone());
                     }
                 }
@@ -306,7 +291,9 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                     }
                 }
                 StatusNodeSegment::ArcSegment2(arc_segment) => {
-                    if arc_segment.target().equals(target) {
+                    if (arc_segment.is_top() && arc_segment.source().equals(target))
+                        || (!arc_segment.is_top() && arc_segment.target().equals(target))
+                    {
                         result.push(status_node.segment);
                     }
                 }
@@ -437,7 +424,6 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                             && arc_segment.radius().equals(segment.radius())
                             && arc_segment.source().equals(&segment.source())
                             && arc_segment.target().equals(&segment.target())
-                            && arc_segment.orientation() == segment.orientation()
                         {
                             if index == 0 {
                                 return None;
@@ -481,7 +467,6 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                             && arc_segment.radius().equals(segment.radius())
                             && arc_segment.source().equals(&segment.source())
                             && arc_segment.target().equals(&segment.target())
-                            && arc_segment.orientation() == segment.orientation()
                         {
                             if index == mid_order_traversal.len() - 1 {
                                 return None;
@@ -581,6 +566,59 @@ fn calculate_segment_value<T: NumberType>(segment: &impl Segment2<T>, point: &Po
     }
 }
 
+fn get_target_of_segment<T: NumberType>(segment: &impl Segment2<T>) -> Point2<T> {
+    match segment.segment_type() {
+        Segment2Type::LineSegment2 => segment.target(),
+        _ => {
+            let arc_segment = ArcSegment2::new(
+                CircleSegment2::new(segment.center(), segment.radius()),
+                segment.source_radian(),
+                segment.target_radian(),
+            );
+            if arc_segment.is_top() {
+                arc_segment.source()
+            } else {
+                arc_segment.target()
+            }
+        }
+    }
+}
+
+fn calculate_mid_value<T: NumberType>(
+    segment_a: &impl Segment2<T>,
+    segment_b: &impl Segment2<T>,
+    event_point: &Point2<T>,
+) -> (T, T) {
+    let target_a = get_target_of_segment(segment_a);
+    let target_b = get_target_of_segment(segment_b);
+    let target = if target_a < target_b {
+        target_a
+    } else {
+        target_b
+    };
+    let mid = (*event_point + target) * T::from_f64(0.5);
+    let mid = Point2::new(mid.x(), mid.y());
+    (
+        calculate_segment_value(segment_a, &mid),
+        calculate_segment_value(segment_b, &mid),
+    )
+}
+
+fn compare_segments_same_slope<T: NumberType>(
+    segment_a: &impl Segment2<T>,
+    segment_b: &impl Segment2<T>,
+    event_point: &Point2<T>,
+) -> std::cmp::Ordering {
+    let (mid_a_value, mid_b_value) = calculate_mid_value(segment_a, segment_b, event_point);
+    if mid_a_value.equals(mid_b_value) {
+        return std::cmp::Ordering::Equal;
+    } else if mid_a_value < mid_b_value {
+        return std::cmp::Ordering::Less;
+    } else {
+        return std::cmp::Ordering::Greater;
+    }
+}
+
 fn compare_segments<T: NumberType>(
     segment_a: &impl Segment2<T>,
     segment_b: &impl Segment2<T>,
@@ -601,51 +639,24 @@ fn compare_segments<T: NumberType>(
             Some(a_slope) => match segment_b_slope {
                 Some(b_slope) => {
                     if a_slope.equals(b_slope) {
-                        return std::cmp::Ordering::Equal;
+                        compare_segments_same_slope(segment_a, segment_b, event_point)
                     } else if a_slope < b_slope {
-                        return std::cmp::Ordering::Less;
+                        std::cmp::Ordering::Less
                     } else {
-                        return std::cmp::Ordering::Greater;
+                        std::cmp::Ordering::Greater
                     }
                 }
-                None => {
-                    return std::cmp::Ordering::Less;
-                }
+                None => std::cmp::Ordering::Less,
             },
             None => match segment_b_slope {
-                Some(_) => {
-                    return std::cmp::Ordering::Greater;
-                }
-                None => {
-                    if segment_a.segment_type() == segment_b.segment_type() {
-                        if segment_a.segment_type() == Segment2Type::LineSegment2 {
-                            let target_a_y = segment_a.target().y();
-                            let target_b_y = segment_b.target().y();
-                            if target_a_y.equals(target_b_y) {
-                                return std::cmp::Ordering::Equal;
-                            } else if target_a_y < target_b_y {
-                                return std::cmp::Ordering::Less;
-                            } else {
-                                return std::cmp::Ordering::Greater;
-                            }
-                        } else {
-                            let mid_a = segment_a.source()+segment_a
-                            return std::cmp::Ordering::Equal;
-                        }
-                    } else {
-                        if segment_a.segment_type() != Segment2Type::LineSegment2 {
-                            return std::cmp::Ordering::Less;
-                        } else {
-                            return std::cmp::Ordering::Greater;
-                        }
-                    }
-                }
+                Some(_) => std::cmp::Ordering::Greater,
+                None => compare_segments_same_slope(segment_a, segment_b, event_point),
             },
         }
     } else if segment_a_value < segment_b_value {
-        return std::cmp::Ordering::Less;
+        std::cmp::Ordering::Less
     } else {
-        return std::cmp::Ordering::Greater;
+        std::cmp::Ordering::Greater
     }
 }
 
@@ -667,7 +678,6 @@ impl<T: NumberType> PartialEq for StatusNode<T> {
                         && segment.radius().equals(other_segment.radius())
                         && segment.source().equals(&other_segment.source())
                         && segment.target().equals(&other_segment.target())
-                        && segment.orientation() == other_segment.orientation()
                 }
                 _ => false,
             },
@@ -684,7 +694,7 @@ impl<T: NumberType> Ord for StatusNode<T> {
             if point > other.point {
                 point = other.point.clone();
             }
-            return match self.segment {
+            match self.segment {
                 StatusNodeSegment::LineSegment2(segment) => match other.segment {
                     StatusNodeSegment::LineSegment2(other_segment) => {
                         if segment.source().equals(&other_segment.source())
@@ -708,7 +718,6 @@ impl<T: NumberType> Ord for StatusNode<T> {
                             && segment.radius().equals(other_segment.radius())
                             && segment.source().equals(&other_segment.source())
                             && segment.target().equals(&other_segment.target())
-                            && segment.orientation() == other_segment.orientation()
                         {
                             std::cmp::Ordering::Equal
                         } else {
@@ -716,12 +725,11 @@ impl<T: NumberType> Ord for StatusNode<T> {
                         }
                     }
                 },
-            };
-        }
-        if self_value < other_value {
-            return std::cmp::Ordering::Less;
+            }
+        } else if self_value < other_value {
+            std::cmp::Ordering::Less
         } else {
-            return std::cmp::Ordering::Greater;
+            std::cmp::Ordering::Greater
         }
     }
 }
@@ -739,6 +747,43 @@ mod tests {
 
     #[test]
     fn test_sweep_line_segment_2_intersection() {
+        let mut sweep = SweepSegment2Intersection::new();
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(10.0, 10.0),
+            Point2::new(0.0, 10.0),
+        ));
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(0.0, 5.0),
+            Point2::new(5.0, 10.0),
+        ));
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(3.0, 0.0),
+            Point2::new(3.0, 15.0),
+        ));
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(3.0, 8.0),
+            Point2::new(10.0, 10.0),
+        ));
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(3.0, 12.0),
+            Point2::new(5.0, 0.0),
+        ));
+
+        let result = sweep.intersection();
+        assert_eq!(
+            result,
+            vec![
+                Point2::new(10.0, 10.0),
+                Point2::new(5.0, 10.0),
+                Point2::new(3.636363636363636, 8.181818181818182),
+                Point2::new(3.571428571428571, 8.571428571428571),
+                Point2::new(3.3333333333333335, 10.0),
+                Point2::new(3.0, 12.0),
+                Point2::new(3.0, 10.0),
+                Point2::new(3.0, 8.0),
+            ]
+        );
+
         let circle_segment = CircleSegment2::new(Point2::new(0.0, 0.0), 5.0);
         let mut sweep = SweepSegment2Intersection::new();
         sweep.push_segment(&LineSegment2::new(
@@ -758,6 +803,63 @@ mod tests {
             std::f64::consts::PI * 2.0,
         ));
         let result = sweep.intersection();
+        assert_eq!(
+            result,
+            vec![
+                Point2::new(5.0, 0.0),
+                Point2::new(3.5355339059327373, -3.5355339059327373),
+                Point2::new(-3.5355339059327373, 3.5355339059327373),
+                Point2::new(-5.0, 0.0),
+            ]
+        );
+
+        let mut sweep = SweepSegment2Intersection::new();
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(-5.0, 5.0),
+            Point2::new(5.0, -5.0),
+        ));
+
+        sweep.push_segment(&ArcSegment2::new(
+            CircleSegment2::new(Point2::new(0.0, 0.0), 3.0),
+            0.0,
+            std::f64::consts::PI,
+        ));
+
+        sweep.push_segment(&ArcSegment2::new(
+            CircleSegment2::new(Point2::new(0.0, -3.0), 5.0),
+            0.0,
+            std::f64::consts::PI,
+        ));
+        let result = sweep.intersection();
         println!("{:?}", result);
+
+        let mut sweep = SweepSegment2Intersection::new();
+        sweep.push_segment(&LineSegment2::new(
+            Point2::new(-5.0, 5.0),
+            Point2::new(5.0, -5.0),
+        ));
+
+        sweep.push_segment(&ArcSegment2::new(
+            CircleSegment2::new(Point2::new(0.0, 4.0), 2.0),
+            1.5 * std::f64::consts::PI,
+            3.0 * std::f64::consts::PI,
+        ));
+
+        sweep.push_segment(&ArcSegment2::new(
+            CircleSegment2::new(Point2::new(0.0, -3.0), 5.0),
+            0.0,
+            std::f64::consts::PI,
+        ));
+        let result = sweep.intersection();
+        println!("{:?}", result);
+        // assert_eq!(
+        //     result,
+        //     vec![
+        //         Point2::new(5.0, 0.0),
+        //         Point2::new(3.5355339059327373, -3.5355339059327373),
+        //         Point2::new(-3.5355339059327373, 3.5355339059327373),
+        //         Point2::new(-5.0, 0.0),
+        //     ]
+        // );
     }
 }
