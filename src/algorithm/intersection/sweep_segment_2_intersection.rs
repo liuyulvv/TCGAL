@@ -27,6 +27,7 @@ struct StatusNode<T: NumberType> {
 }
 
 pub struct SweepSegment2Intersection<T: NumberType> {
+    origin_segments: Vec<StatusNodeSegment<T>>,
     segments: Vec<StatusNodeSegment<T>>,
     event_queue: PriorityQueue<Point2<T>>,
     status_tree: AVLTree<StatusNode<T>>,
@@ -40,6 +41,10 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
             Segment2Type::LineSegment2 => {
                 let source = segment.source();
                 let target = segment.target();
+                self.origin_segments
+                    .push(StatusNodeSegment::LineSegment2(LineSegment2::new(
+                        source, target,
+                    )));
                 if source > target {
                     self.segments
                         .push(StatusNodeSegment::LineSegment2(LineSegment2::new(
@@ -54,6 +59,12 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
             }
             Segment2Type::CircleSegment2 => {
                 let circle_segment = CircleSegment2::new(segment.center(), segment.radius());
+                self.origin_segments
+                    .push(StatusNodeSegment::ArcSegment2(ArcSegment2::new(
+                        circle_segment.clone(),
+                        T::zero(),
+                        T::pi() * T::from_f64(2.0),
+                    )));
                 self.segments
                     .push(StatusNodeSegment::ArcSegment2(ArcSegment2::new(
                         circle_segment.clone(),
@@ -77,6 +88,12 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
                     segment.source_radian(),
                     segment.target_radian(),
                 );
+                self.origin_segments
+                    .push(StatusNodeSegment::ArcSegment2(ArcSegment2::new(
+                        circle_segment.clone(),
+                        segment.source_radian(),
+                        segment.target_radian(),
+                    )));
                 let arc_segments = arc_segment.monotone();
                 for arc_segment in arc_segments {
                     self.segments
@@ -88,6 +105,7 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
 
     pub fn new() -> Self {
         Self {
+            origin_segments: Vec::new(),
             segments: Vec::new(),
             event_queue: PriorityQueue::new(),
             status_tree: AVLTree::new(AVLTreeOption::SameNodeInsertRight),
@@ -122,7 +140,34 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
             self.handle_event_point(&event_point);
             self.last_event_point = Some(event_point);
         }
-        self.intersection_points.mid_order_traversal()
+        let points = self.intersection_points.mid_order_traversal();
+        self.filter_intersection_points(points)
+    }
+
+    fn filter_intersection_points(&self, points: Vec<Point2<T>>) -> Vec<Point2<T>> {
+        let mut result = Vec::new();
+        for point in points {
+            let mut sum = 0;
+            for segment in &self.origin_segments {
+                match segment {
+                    StatusNodeSegment::LineSegment2(line_segment) => {
+                        if is_point_2_on_line_segment_2(&point, line_segment) {
+                            sum += 1;
+                        }
+                    }
+                    StatusNodeSegment::ArcSegment2(arc_segment) => {
+                        if is_point_2_on_arc_segment_2(&point, arc_segment) {
+                            sum += 1;
+                        }
+                    }
+                }
+                if sum > 1 {
+                    result.push(point);
+                    break;
+                }
+            }
+        }
+        result
     }
 
     fn handle_event_point(&mut self, event_point: &Point2<T>) {
@@ -831,7 +876,15 @@ mod tests {
             std::f64::consts::PI,
         ));
         let result = sweep.intersection();
-        println!("{:?}", result);
+        assert_eq!(
+            result,
+            vec![
+                Point2::new(2.7638539919628324, 1.166666666666667),
+                Point2::new(-1.7015621187164243, 1.7015621187164243),
+                Point2::new(-2.1213203435596424, 2.1213203435596424),
+                Point2::new(-2.7638539919628333, 1.1666666666666667)
+            ]
+        );
 
         let mut sweep = SweepSegment2Intersection::new();
         sweep.push_segment(&LineSegment2::new(
@@ -851,15 +904,12 @@ mod tests {
             std::f64::consts::PI,
         ));
         let result = sweep.intersection();
-        println!("{:?}", result);
-        // assert_eq!(
-        //     result,
-        //     vec![
-        //         Point2::new(5.0, 0.0),
-        //         Point2::new(3.5355339059327373, -3.5355339059327373),
-        //         Point2::new(-3.5355339059327373, 3.5355339059327373),
-        //         Point2::new(-5.0, 0.0),
-        //     ]
-        // );
+        assert_eq!(
+            result,
+            vec![
+                Point2::new(0.0, 2.0),
+                Point2::new(-1.7015621187164243, 1.7015621187164243),
+            ]
+        );
     }
 }
