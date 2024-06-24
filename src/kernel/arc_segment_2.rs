@@ -12,24 +12,19 @@ pub struct ArcSegment2<T: NumberType> {
 
 impl<T: NumberType> ArcSegment2<T> {
     pub fn new(support: CircleSegment2<T>, source_radian: T, target_radian: T) -> Self {
-        // if target_radian < source_radian {
-        //     panic!("source_radian must be less than target_radian");
-        // }
-        // let mut source_radian = source_radian;
-        // let mut target_radian = target_radian;
-        // let two_pi = T::pi() * T::from_f64(2.0);
-        // while !source_radian.equals(two_pi) && source_radian > two_pi {
-        //     source_radian = source_radian - two_pi;
-        // }
-        // while !target_radian.equals(two_pi) && target_radian > two_pi {
-        //     target_radian = target_radian - two_pi;
-        // }
-        // if source_radian.equals(target_radian) {
-        //     source_radian = T::zero();
-        //     target_radian = two_pi;
-        // } else if source_radian > target_radian {
-        //     target_radian = target_radian + two_pi;
-        // }
+        let mut source_radian = source_radian;
+        let mut target_radian = target_radian;
+        let four_pi = T::pi() * T::from_f64(4.0);
+        while !source_radian.equals(four_pi) && source_radian > four_pi {
+            source_radian = source_radian - four_pi;
+        }
+        while !target_radian.equals(four_pi) && target_radian > four_pi {
+            target_radian = target_radian - four_pi;
+        }
+        if source_radian.equals(target_radian) {
+            source_radian = T::zero();
+            target_radian = T::pi() * T::from_f64(2.0);
+        }
         Self {
             support,
             source_radian,
