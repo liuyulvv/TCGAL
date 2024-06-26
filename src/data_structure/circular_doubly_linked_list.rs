@@ -46,6 +46,9 @@ impl<T: Clone + Copy> CircularDoubleLinkedList<T> {
                 new_node.borrow_mut().next = next.clone();
                 next.unwrap().borrow_mut().prev = Some(new_node.clone());
                 self.length += 1;
+                if Rc::ptr_eq(&node, &self.tail().unwrap()) {
+                    self.tail = Some(new_node.clone());
+                }
                 new_node
             }
             None => {
@@ -86,6 +89,11 @@ impl<T: Clone + Copy> CircularDoubleLinkedList<T> {
                         self.head = None;
                         self.tail = None;
                     }
+                }
+                if Rc::ptr_eq(&node, &self.head().unwrap()) {
+                    self.head = node.borrow().next.clone();
+                } else if Rc::ptr_eq(&node, &self.tail().unwrap()) {
+                    self.tail = node.borrow().prev.clone();
                 }
                 self.length -= 1;
             }
