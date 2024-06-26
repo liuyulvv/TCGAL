@@ -34,19 +34,20 @@ pub fn earcut_2<T: NumberType>(polygon: Polygon2<T>) -> Vec<Vec<usize>> {
     let mut ears = Vec::new();
     let mut reflexes = Vec::new();
     let polygon_vertices = polygon.vertices();
+    let mut _vertex = vertices.tail();
     for i in 0..polygon_vertices.len() {
         let vertex_type = init_vertex_type(&polygon_vertices, i);
-        let vertex = vertices.insert(
+        _vertex = Some(vertices.insert(
             vertices.tail(),
             EarcutVertex {
                 index: i,
                 point: polygon_vertices[i],
                 vertex_type,
             },
-        );
+        ));
         match vertex_type {
-            VertexType::Ear => ears.push(vertex),
-            VertexType::Reflex => reflexes.push(vertex),
+            VertexType::Ear => ears.push(_vertex.unwrap()),
+            VertexType::Reflex => reflexes.push(_vertex.unwrap()),
             _ => {}
         }
     }
@@ -271,37 +272,5 @@ fn init_vertex_type<T: NumberType>(vertex: &Vec<Point2<T>>, index: usize) -> Ver
             }
             return VertexType::Ear;
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_earcut_2() {
-        // let polygon = Polygon2::new(vec![
-        //     Point2::new(0.0, 0.0),
-        //     Point2::new(1.0, 0.0),
-        //     Point2::new(1.0, 1.0),
-        //     Point2::new(0.0, 1.0),
-        // ]);
-        // let triangles = earcut_2(polygon);
-        // println!("{:?}", triangles);
-
-        let polygon = Polygon2::new(vec![
-            Point2::new(-5.0, -10.0),
-            Point2::new(0.0, -15.0),
-            Point2::new(10.0, -13.0),
-            Point2::new(10.0, -5.0),
-            Point2::new(2.0, -2.0),
-            Point2::new(8.0, 8.0),
-            Point2::new(4.0, 10.0),
-            Point2::new(3.0, 3.0),
-            Point2::new(0.0, 10.0),
-            Point2::new(-2.0, 12.0),
-        ]);
-        let triangles = earcut_2(polygon);
-        println!("{:?}", triangles);
     }
 }
