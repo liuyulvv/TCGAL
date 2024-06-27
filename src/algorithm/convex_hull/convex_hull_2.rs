@@ -5,10 +5,8 @@ pub struct ConvexHull2<T: NumberType> {
 }
 
 impl<T: NumberType> ConvexHull2<T> {
-    pub fn new(points: &Vec<Point2<T>>) -> Self {
-        Self {
-            points: points.clone(),
-        }
+    pub fn new(points: Vec<Point2<T>>) -> Self {
+        Self { points }
     }
 
     pub fn convex_hull(&mut self) -> Vec<Point2<T>> {
