@@ -1,5 +1,7 @@
-use super::vector_2::Vector2;
-use crate::kernel::{point_2::Point2 as KernelPoint2, util_enum::TurnDirection};
+use crate::{
+    kernel::{point_2::Point2 as KernelPoint2, util_enum::TurnDirection},
+    wasm::kernel::vector_2::Vector2,
+};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

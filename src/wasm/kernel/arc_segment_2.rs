@@ -1,11 +1,14 @@
-use super::circle_segment_2::CircleSegment2;
-use super::point_2::Point2;
-use crate::kernel::{
-    arc_segment_2::ArcSegment2 as KernelArcSegment2, segment_2::Segment2, util_enum::Segment2Type,
+use crate::{
+    kernel::{
+        arc_segment_2::ArcSegment2 as KernelArcSegment2, segment_2::Segment2,
+        util_enum::Segment2Type,
+    },
+    wasm::kernel::{circle_segment_2::CircleSegment2, point_2::Point2},
 };
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
+#[derive(Debug, Clone, Copy)]
 pub struct ArcSegment2 {
     #[wasm_bindgen(skip)]
     pub kernel_arc_segment_2: KernelArcSegment2<f64>,
