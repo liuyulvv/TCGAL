@@ -8,6 +8,7 @@
         "Hasher",
         "powi",
         "RCGAL",
-        "topo"
+        "topo",
+        "tsbuildinfo"
     ]
 }
