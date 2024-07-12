@@ -11,5 +11,5 @@ repository = "https://github.com/liuyulvv/rcgal"
 [lib]
 crate-type = ["cdylib", "rlib"]
 
-[dependencies]
+[target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2.92"
