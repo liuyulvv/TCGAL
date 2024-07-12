@@ -1,6 +1,7 @@
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Point2Segment2Location {
     On,
@@ -9,7 +10,7 @@ pub enum Point2Segment2Location {
     Collinear,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Point2Circle2Location {
     On,
@@ -17,7 +18,7 @@ pub enum Point2Circle2Location {
     Outside,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Point2Polygon2Location {
     On,
@@ -25,7 +26,7 @@ pub enum Point2Polygon2Location {
     Outside,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Point2Triangle2Location {
     On,
@@ -33,7 +34,7 @@ pub enum Point2Triangle2Location {
     Outside,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Point2Ray2Location {
     On,
@@ -42,7 +43,7 @@ pub enum Point2Ray2Location {
     Collinear,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Point2ArcSegment2Location {
     On,
