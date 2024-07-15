@@ -92,7 +92,7 @@ function App() {
                     height={height}
                 >
                     <Layer>
-                        {lines.map((points, index) => {
+                        {lines.map((points, index) => (
                             <Line
                                 key={index}
                                 points={[points[0].x, points[0].y, points[1].x, points[1].y]}
@@ -101,8 +101,8 @@ function App() {
                                 tension={0.5}
                                 lineCap="round"
                                 lineJoin="round"
-                            />;
-                        })}
+                            />
+                        ))}
                         {tempLine ? (
                             <Line
                                 key={-1}
