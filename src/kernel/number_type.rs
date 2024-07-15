@@ -62,7 +62,7 @@ impl DefaultNumberValueTrait for f64 {
     }
 
     fn default_eps() -> Self {
-        1e-12
+        1e-10
     }
 
     fn zero() -> Self {
