@@ -27,7 +27,10 @@ export class DrawLineSegmentAction extends DrawAction {
 
     public onDraw(): void {}
 
-    public onStop(): void {}
+    public onStop(): void {
+        this.drawFlag = false;
+        useStageStore.getState().setTempLine(null);
+    }
 
     public onPointerDown(event: KonvaEventObject<MouseEvent>): void {
         if (event.evt.button == 0) {

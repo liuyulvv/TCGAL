@@ -1,5 +1,6 @@
 import { DrawAction, DrawActionType } from "./DrawAction";
 import { DrawLineSegmentAction } from "./DrawLineSegmentAction";
+import { DrawCircleSegmentAction } from "./DrawwCircleSegmentAction";
 
 export class DrawManager {
     private static instance: DrawManager;
@@ -10,6 +11,7 @@ export class DrawManager {
         this.actions = new Map();
         this.activeAction = null;
         this.addAction(DrawLineSegmentAction.getInstance());
+        this.addAction(DrawCircleSegmentAction.getInstance());
     }
 
     public static getInstance(): DrawManager {
@@ -32,6 +34,7 @@ export class DrawManager {
     }
 
     public setActiveAction(actionType: DrawActionType): void {
+        this.activeAction?.onStop();
         this.activeAction = this.actions.get(actionType) || null;
     }
 
