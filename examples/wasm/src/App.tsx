@@ -1,13 +1,14 @@
 import { Button, Radio, RadioGroup } from "@fluentui/react-components";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
-import { Layer, Line, Stage } from "react-konva";
+import { Circle, Layer, Line, Stage } from "react-konva";
 import { DrawActionType } from "./draw/DrawAction";
 import { DrawManager } from "./draw/DrawManager";
 import { useStageStore } from "./status/Stage";
 
 function App() {
     const stageContainerRef = useRef<HTMLDivElement>(null);
+    const points = useStageStore((state) => state.points);
     const lines = useStageStore((state) => state.lines);
     const tempLine = useStageStore((state) => state.tempLine);
     const [width, setWidth] = useState<number>(0);
@@ -114,6 +115,11 @@ function App() {
                                 lineJoin="round"
                             />
                         ) : null}
+                    </Layer>
+                    <Layer>
+                        {points.map((coords, index) => (
+                            <Circle key={index} x={coords[0].x} y={coords[0].y} radius={5} fill="black" />
+                        ))}
                     </Layer>
                 </Stage>
             </div>
