@@ -49,7 +49,7 @@ impl<T: NumberType> Vector2<T> {
         let radian_a = self.y().atan2(self.x());
         let radian_b = other.y().atan2(other.x());
         let mut radian = radian_b - radian_a;
-        if radian.equals(T::zero()) || radian < T::zero() {
+        if radian < T::zero() {
             radian = radian + T::from_f64(2.0) * T::pi();
         }
         radian

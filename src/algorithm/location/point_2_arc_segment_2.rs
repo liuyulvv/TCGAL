@@ -24,7 +24,10 @@ pub fn locate_point_2_arc_segment_2<T: NumberType>(
         let vector = *point - center;
         let source = arc_segment.source() - center;
         let target = arc_segment.target() - center;
-        let radian = source.radian_to(&target);
+        let mut radian = source.radian_to(&target);
+        if source == target {
+            radian = T::pi() * T::from_f64(2.0);
+        }
         let radian_source = vector.radian_to(&source);
         let radian_target = vector.radian_to(&target);
         let source_radian = source.radian_to(&vector);
