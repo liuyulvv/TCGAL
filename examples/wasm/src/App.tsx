@@ -1,4 +1,4 @@
-import { Button, Radio, RadioGroup } from "@fluentui/react-components";
+import { Button, Label, Radio, RadioGroup } from "@fluentui/react-components";
 import { KonvaEventObject } from "konva/lib/Node";
 import { useEffect, useRef, useState } from "react";
 import { Circle, Layer, Line, Stage } from "react-konva";
@@ -8,9 +8,12 @@ import { useStageStore } from "./status/Stage";
 
 function App() {
     const stageContainerRef = useRef<HTMLDivElement>(null);
+    const cost = useStageStore((state) => state.cost);
     const points = useStageStore((state) => state.points);
     const lines = useStageStore((state) => state.lines);
+    const circles = useStageStore((state) => state.circles);
     const tempLine = useStageStore((state) => state.tempLine);
+    const tempCircle = useStageStore((state) => state.tempCircle);
     const [width, setWidth] = useState<number>(0);
     const [height, setHeight] = useState<number>(0);
     const [drawType, setDrawType] = useState(DrawActionType.None);
@@ -62,7 +65,6 @@ function App() {
                 >
                     <Radio value="line-segment" label="Line Segment" checked={drawType == DrawActionType.LineSegment} />
                     <Radio
-                        disabled
                         value="circle-segment"
                         label="Circle Segment"
                         checked={drawType == DrawActionType.CircleSegment}
@@ -83,6 +85,15 @@ function App() {
                 >
                     Stop
                 </Button>
+                <Button
+                    disabled={drawType != DrawActionType.None}
+                    onClick={() => {
+                        useStageStore.getState().clear();
+                    }}
+                >
+                    Clear
+                </Button>
+                {cost != null ? <Label>Cost: {cost}(ms)</Label> : null}
             </div>
             <div style={{ flex: 1 }} ref={stageContainerRef}>
                 <Stage
@@ -95,7 +106,7 @@ function App() {
                     <Layer>
                         {lines.map((points, index) => (
                             <Line
-                                key={index}
+                                key={"line-" + index}
                                 points={[points[0].x, points[0].y, points[1].x, points[1].y]}
                                 stroke="#df4b26"
                                 strokeWidth={3}
@@ -106,7 +117,7 @@ function App() {
                         ))}
                         {tempLine ? (
                             <Line
-                                key={-1}
+                                key="line-temp"
                                 points={[tempLine![0].x, tempLine![0].y, tempLine![1].x, tempLine![1].y]}
                                 stroke="#df4b26"
                                 strokeWidth={3}
@@ -115,10 +126,30 @@ function App() {
                                 lineJoin="round"
                             />
                         ) : null}
+                        {circles.map((circle, index) => (
+                            <Circle
+                                key={"circle-" + index}
+                                x={circle[0].x}
+                                y={circle[0].y}
+                                radius={circle[1]}
+                                stroke="#df4b26"
+                                strokeWidth={3}
+                            />
+                        ))}
+                        {tempCircle ? (
+                            <Circle
+                                key="circle-temp"
+                                x={tempCircle[0].x}
+                                y={tempCircle[0].y}
+                                radius={tempCircle[1]}
+                                stroke="#df4b26"
+                                strokeWidth={3}
+                            />
+                        ) : null}
                     </Layer>
                     <Layer>
                         {points.map((coords, index) => (
-                            <Circle key={index} x={coords[0].x} y={coords[0].y} radius={5} fill="black" />
+                            <Circle key={"point-" + index} x={coords[0].x} y={coords[0].y} radius={5} fill="black" />
                         ))}
                     </Layer>
                 </Stage>
