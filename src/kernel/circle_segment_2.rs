@@ -29,22 +29,6 @@ impl<T: NumberType> Segment2<T> for CircleSegment2<T> {
         return Segment2Type::CircleSegment2;
     }
 
-    fn source(&self) -> Point2<T> {
-        panic!("CircleSegment2 does not have a source point")
-    }
-
-    fn source_radian(&self) -> T {
-        panic!("CircleSegment2 does not have a source radian")
-    }
-
-    fn target(&self) -> Point2<T> {
-        panic!("CircleSegment2 does not have a target point")
-    }
-
-    fn target_radian(&self) -> T {
-        panic!("CircleSegment2 does not have a target radian")
-    }
-
     fn center(&self) -> Point2<T> {
         self.center.clone()
     }

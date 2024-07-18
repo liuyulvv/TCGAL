@@ -1,3 +1,4 @@
+use core::panic;
 use std::fmt::Debug;
 
 use super::{number_type::NumberType, point_2::Point2, util_enum::Segment2Type};
@@ -12,11 +13,31 @@ use super::{number_type::NumberType, point_2::Point2, util_enum::Segment2Type};
  */
 
 pub trait Segment2<T: NumberType>: Debug + Clone + Copy {
-    fn segment_type(&self) -> Segment2Type;
-    fn source(&self) -> Point2<T>;
-    fn source_radian(&self) -> T;
-    fn target(&self) -> Point2<T>;
-    fn target_radian(&self) -> T;
-    fn center(&self) -> Point2<T>;
-    fn radius(&self) -> T;
+    fn segment_type(&self) -> Segment2Type {
+        panic!("Not implemented");
+    }
+
+    fn source(&self) -> Point2<T> {
+        panic!("Not implemented");
+    }
+
+    fn source_radian(&self) -> T {
+        panic!("Not implemented");
+    }
+
+    fn target(&self) -> Point2<T> {
+        panic!("Not implemented");
+    }
+
+    fn target_radian(&self) -> T {
+        panic!("Not implemented");
+    }
+
+    fn center(&self) -> Point2<T> {
+        panic!("Not implemented");
+    }
+
+    fn radius(&self) -> T {
+        panic!("Not implemented");
+    }
 }

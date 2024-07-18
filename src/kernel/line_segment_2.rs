@@ -19,28 +19,12 @@ impl<T: NumberType> Segment2<T> for LineSegment2<T> {
         self.source.clone()
     }
 
-    fn source_radian(&self) -> T {
-        panic!("LineSegment2 does not have a source radian")
-    }
-
     fn target(&self) -> Point2<T> {
         self.target.clone()
     }
 
-    fn target_radian(&self) -> T {
-        panic!("LineSegment2 does not have a target radian")
-    }
-
     fn segment_type(&self) -> Segment2Type {
         return Segment2Type::LineSegment2;
-    }
-
-    fn center(&self) -> Point2<T> {
-        panic!("LineSegment2 does not have a center point")
-    }
-
-    fn radius(&self) -> T {
-        panic!("LineSegment2 does not have a radius")
     }
 }
 
