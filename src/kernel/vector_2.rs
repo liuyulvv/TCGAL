@@ -103,19 +103,18 @@ mod tests {
         let v_a = Vector2::new(1.0, 0.0);
         let v_b = Vector2::new(0.0, 1.0);
         assert_eq!(v_a.radian_to(&v_b), std::f64::consts::PI / 2.0);
+        assert_eq!(v_b.radian_to(&v_a), std::f64::consts::PI * 3.0 / 2.0);
 
         let v_b = Vector2::new(-1.0, 0.0);
         assert_eq!(v_a.radian_to(&v_b), std::f64::consts::PI);
+        assert_eq!(v_b.radian_to(&v_a), std::f64::consts::PI);
 
-        let v_b = Vector2::new(0.0, -4.0);
+        let v_b = Vector2::new(0.0, -1.0);
         assert_eq!(v_a.radian_to(&v_b), std::f64::consts::PI * 3.0 / 2.0);
-
-        let v_a = Vector2::new(0.0, 1.0);
-        let v_b = Vector2::new(1.0, 0.0);
-        assert_eq!(v_a.radian_to(&v_b), std::f64::consts::PI * 3.0 / 2.0);
-
-        let v_a = Vector2::new(0.0, 1.0);
-        let v_b = Vector2::new(1.0, 0.0);
         assert_eq!(v_b.radian_to(&v_a), std::f64::consts::PI / 2.0);
+
+        let v_b = Vector2::new(1.0, 0.0);
+        assert_eq!(v_a.radian_to(&v_b), 0.0);
+        assert_eq!(v_b.radian_to(&v_a), 0.0);
     }
 }
