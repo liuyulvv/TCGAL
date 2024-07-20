@@ -49,3 +49,10 @@ pub enum Point2ArcSegment2Location {
     On,
     NotOn,
 }
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Point2Line2Location {
+    On,
+    NotOn,
+}
