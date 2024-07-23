@@ -3,3 +3,4 @@ pub mod intersection;
 pub mod location;
 pub mod projection;
 pub mod triangulation;
+pub mod util;

@@ -1,4 +1,4 @@
-use crate::algorithm::intersection::sweep_segment_2_intersection::SweepSegment2Intersection;
+use crate::algorithm::intersection::sweep::sweep_segment_2_intersection::SweepSegment2Intersection;
 
 use super::{
     line_segment_2::LineSegment2, number_type::NumberType, point_2::Point2, triangle_2::Triangle2,
