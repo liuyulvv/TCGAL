@@ -111,7 +111,7 @@ impl<T: NumberType> Segment2<T> for ArcSegment2<T> {
 impl<T: NumberType> PartialEq for ArcSegment2<T> {
     fn eq(&self, other: &Self) -> bool {
         self.center() == other.center()
-            && self.radius() == other.radius()
+            && self.radius().equals(other.radius())
             && self.source_radian.equals(other.source_radian)
             && self.target_radian.equals(other.target_radian)
     }

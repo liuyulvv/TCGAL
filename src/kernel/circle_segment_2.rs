@@ -37,3 +37,9 @@ impl<T: NumberType> Segment2<T> for CircleSegment2<T> {
         self.radius
     }
 }
+
+impl<T: NumberType> PartialEq for CircleSegment2<T> {
+    fn eq(&self, other: &Self) -> bool {
+        self.center == other.center && self.radius.equals(other.radius)
+    }
+}
