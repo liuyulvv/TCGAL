@@ -172,8 +172,7 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
 
     fn handle_event_point(&mut self, event_point: &Point2<T>) {
         let source_is_p = self.get_segment_with_source(event_point);
-        let target_is_p = self.get_active_segment_with_target(event_point);
-        let contain_p = self.get_active_segment_containing_point(event_point);
+        let (target_is_p, contain_p) = self.get_active_segment_target_with_and_contain(event_point);
         if source_is_p.is_empty() && target_is_p.is_empty() && contain_p.is_empty() {
             return;
         }
@@ -325,56 +324,48 @@ impl<T: NumberType> SweepSegment2Intersection<T> {
         result
     }
 
-    fn get_active_segment_with_target(&self, target: &Point2<T>) -> Vec<StatusNodeSegment<T>> {
-        let mut result = Vec::new();
+    fn get_active_segment_target_with_and_contain(
+        &self,
+        point: &Point2<T>,
+    ) -> (Vec<StatusNodeSegment<T>>, Vec<StatusNodeSegment<T>>) {
+        let mut target_result = Vec::new();
+        let mut contain_result = Vec::new();
         let status_nodes = self.status_tree.mid_order_traversal();
         for status_node in status_nodes {
             match status_node.segment {
                 StatusNodeSegment::LineSegment2(line_segment) => {
-                    if line_segment.target().equals(target) {
-                        result.push(status_node.segment);
+                    if line_segment.target().equals(point) {
+                        target_result.push(status_node.segment);
+                    } else {
+                        let source = line_segment.source();
+                        let target = line_segment.target();
+                        if source.equals(point) || target.equals(point) {
+                            continue;
+                        }
+                        if is_point_2_on_line_segment_2(point, &line_segment) {
+                            contain_result.push(status_node.segment);
+                        }
                     }
                 }
                 StatusNodeSegment::ArcSegment2(arc_segment) => {
-                    if (arc_segment.is_top() && arc_segment.source().equals(target))
-                        || (!arc_segment.is_top() && arc_segment.target().equals(target))
+                    if (arc_segment.is_top() && arc_segment.source().equals(point))
+                        || (!arc_segment.is_top() && arc_segment.target().equals(point))
                     {
-                        result.push(status_node.segment);
+                        target_result.push(status_node.segment);
+                    } else {
+                        let source = arc_segment.source();
+                        let target = arc_segment.target();
+                        if source.equals(point) || target.equals(point) {
+                            continue;
+                        }
+                        if is_point_2_on_arc_segment_2(point, &arc_segment) {
+                            contain_result.push(status_node.segment);
+                        }
                     }
                 }
             }
         }
-        result
-    }
-
-    fn get_active_segment_containing_point(&self, point: &Point2<T>) -> Vec<StatusNodeSegment<T>> {
-        let mut result = Vec::new();
-        let status_nodes = self.status_tree.mid_order_traversal();
-        for status_node in status_nodes {
-            match status_node.segment {
-                StatusNodeSegment::LineSegment2(line_segment) => {
-                    let source = line_segment.source();
-                    let target = line_segment.target();
-                    if source.equals(point) || target.equals(point) {
-                        continue;
-                    }
-                    if is_point_2_on_line_segment_2(point, &line_segment) {
-                        result.push(status_node.segment);
-                    }
-                }
-                StatusNodeSegment::ArcSegment2(arc_segment) => {
-                    let source = arc_segment.source();
-                    let target = arc_segment.target();
-                    if source.equals(point) || target.equals(point) {
-                        continue;
-                    }
-                    if is_point_2_on_arc_segment_2(point, &arc_segment) {
-                        result.push(status_node.segment);
-                    }
-                }
-            }
-        }
-        result
+        (target_result, contain_result)
     }
 
     fn get_neighbors_with_point(
